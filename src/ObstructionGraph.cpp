@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <algorithm>
 
 #include "ObstructionGraph.hpp"
 
@@ -20,7 +21,11 @@ void ObstructionGraph::add_edge(const std::pair<std::string, std::string> &edge)
     if (vertices.find(edge.first) == vertices.end())
         vertices.insert({edge.first, std::vector<std::string>{edge.second}});
     else
-        vertices.at(edge.first).push_back(edge.second);
+    {
+        std::vector<std::string> adjacents = vertices.at(edge.first);
+        if (std::find(adjacents.begin(), adjacents.end(), edge.second) == adjacents.end())
+            vertices.at(edge.first).push_back(edge.second);
+    }
 }
 
 void ObstructionGraph::add_edges_from(const std::vector<std::pair<std::string, std::string>> &edges)
