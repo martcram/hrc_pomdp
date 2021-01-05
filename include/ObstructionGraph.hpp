@@ -18,6 +18,7 @@ public:
 
     void add_edge(const std::pair<std::string, std::string> &edge);
     void add_edges_from(const std::vector<std::pair<std::string, std::string>> &edges);
+    ObstructionGraph reverse();
 };
 
 #endif // OBSTRUCTION_GRAPH_HPP

@@ -35,3 +35,16 @@ void ObstructionGraph::add_edges_from(const std::vector<std::pair<std::string, s
         this->add_edge(edge);
     }
 }
+
+ObstructionGraph ObstructionGraph::reverse()
+{
+    ObstructionGraph reversed_graph{};
+
+    for (const auto &it : vertices)
+    {
+        for (const auto &vertex : it.second)
+            reversed_graph.add_edge(std::pair<std::string, std::string>(vertex, it.first));
+    }
+
+    return reversed_graph;
+}
