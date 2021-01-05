@@ -12,6 +12,8 @@ private:
 public:
     explicit Subassembly(const std::set<std::string> &components);
     ~Subassembly() = default;
+
+    bool operator==(const Subassembly &rhs) const;
 };
 
 #endif // SUBASSEMBLY_HPP
