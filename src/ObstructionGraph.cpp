@@ -26,6 +26,11 @@ void ObstructionGraph::add_edge(const std::pair<std::string, std::string> &edge)
         if (std::find(adjacents.begin(), adjacents.end(), edge.second) == adjacents.end())
             adjacency_list.at(edge.first).push_back(edge.second);
     }
+
+    if (adjacency_list.find(edge.second) == adjacency_list.end())
+    {
+        adjacency_list.insert({edge.second, std::vector<std::string>{}});
+    }
 }
 
 void ObstructionGraph::add_edges_from(const std::vector<std::pair<std::string, std::string>> &edges)
@@ -36,7 +41,7 @@ void ObstructionGraph::add_edges_from(const std::vector<std::pair<std::string, s
     }
 }
 
-ObstructionGraph ObstructionGraph::reverse()
+ObstructionGraph ObstructionGraph::reverse() const
 {
     ObstructionGraph reversed_graph{};
 
@@ -47,4 +52,15 @@ ObstructionGraph ObstructionGraph::reverse()
     }
 
     return reversed_graph;
+}
+
+std::vector<std::string> ObstructionGraph::get_nodes() const
+{
+    std::vector<std::string> nodes{};
+    for (const auto &it : adjacency_list)
+    {
+        nodes.push_back(it.first);
+    }
+
+    return nodes;
 }

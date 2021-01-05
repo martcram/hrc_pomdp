@@ -43,3 +43,14 @@ void ConnectionGraph::add_edges_from(const std::vector<std::pair<std::string, st
         this->add_edge(edge);
     }
 }
+
+std::vector<std::string> ConnectionGraph::get_nodes() const
+{
+    std::vector<std::string> nodes{};
+    for (const auto &it : adjacency_list)
+    {
+        nodes.push_back(it.first);
+    }
+    
+    return nodes;
+}
