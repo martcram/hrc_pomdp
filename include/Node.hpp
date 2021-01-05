@@ -14,6 +14,8 @@ private:
 public:
     explicit Node(const Subassembly &subassembly, double cost = def_cost);
     ~Node() = default;
+
+    bool operator==(const Node &rhs) const;
 };
 
 #endif // NODE_HPP
