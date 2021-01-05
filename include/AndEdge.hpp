@@ -9,11 +9,12 @@ class AndEdge
 private:
     static constexpr double def_cost = 0.0;
 
+    Node parent_node;
     std::vector<Node> child_nodes;
     double cost;
 
 public:
-    explicit AndEdge(const std::vector<Node> &child_nodes, double cost = def_cost);
+    explicit AndEdge(const Node &parent_node, const std::vector<Node> &child_nodes, double cost = def_cost);
     ~AndEdge() = default;
 };
 
