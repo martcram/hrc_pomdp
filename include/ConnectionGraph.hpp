@@ -9,7 +9,7 @@
 class ConnectionGraph
 {
 private:
-    std::unordered_map<std::string, std::vector<std::string>> vertices;
+    std::unordered_map<std::string, std::vector<std::string>> adjacency_list;
     void add_directed_edge(const std::pair<std::string, std::string> &edge);
 
 public:

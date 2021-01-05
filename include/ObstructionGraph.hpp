@@ -9,7 +9,7 @@
 class ObstructionGraph
 {
 private:
-    std::unordered_map<std::string, std::vector<std::string>> vertices;
+    std::unordered_map<std::string, std::vector<std::string>> adjacency_list;
 
 public:
     ObstructionGraph();

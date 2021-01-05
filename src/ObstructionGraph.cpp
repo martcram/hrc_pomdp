@@ -6,25 +6,25 @@
 #include "ObstructionGraph.hpp"
 
 ObstructionGraph::ObstructionGraph()
-    : vertices{}
+    : adjacency_list{}
 {
 }
 
 ObstructionGraph::ObstructionGraph(const std::vector<std::pair<std::string, std::string>> &edges)
-    : vertices{}
+    : adjacency_list{}
 {
     this->add_edges_from(edges);
 }
 
 void ObstructionGraph::add_edge(const std::pair<std::string, std::string> &edge)
 {
-    if (vertices.find(edge.first) == vertices.end())
-        vertices.insert({edge.first, std::vector<std::string>{edge.second}});
+    if (adjacency_list.find(edge.first) == adjacency_list.end())
+        adjacency_list.insert({edge.first, std::vector<std::string>{edge.second}});
     else
     {
-        std::vector<std::string> adjacents = vertices.at(edge.first);
+        std::vector<std::string> adjacents = adjacency_list.at(edge.first);
         if (std::find(adjacents.begin(), adjacents.end(), edge.second) == adjacents.end())
-            vertices.at(edge.first).push_back(edge.second);
+            adjacency_list.at(edge.first).push_back(edge.second);
     }
 }
 
@@ -40,7 +40,7 @@ ObstructionGraph ObstructionGraph::reverse()
 {
     ObstructionGraph reversed_graph{};
 
-    for (const auto &it : vertices)
+    for (const auto &it : adjacency_list)
     {
         for (const auto &vertex : it.second)
             reversed_graph.add_edge(std::pair<std::string, std::string>(vertex, it.first));
