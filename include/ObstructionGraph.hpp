@@ -1,10 +1,10 @@
 #ifndef OBSTRUCTION_GRAPH_HPP
 #define OBSTRUCTION_GRAPH_HPP
 
-#include <vector>
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 class ObstructionGraph
 {

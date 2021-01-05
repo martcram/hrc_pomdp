@@ -1,7 +1,7 @@
-#include <vector>
+#include <algorithm>
 #include <string>
 #include <utility>
-#include <algorithm>
+#include <vector>
 
 #include "ObstructionGraph.hpp"
 
