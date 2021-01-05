@@ -1,0 +1,24 @@
+#ifndef CONNECTION_GRAPH_HPP
+#define CONNECTION_GRAPH_HPP
+
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+class ConnectionGraph
+{
+private:
+    std::unordered_map<std::string, std::vector<std::string>> vertices;
+    void add_directed_edge(const std::pair<std::string, std::string> &edge);
+
+public:
+    ConnectionGraph();
+    explicit ConnectionGraph(const std::vector<std::pair<std::string, std::string>> &edges);
+    ~ConnectionGraph() = default;
+
+    void add_edge(const std::pair<std::string, std::string> &edge);
+    void add_edges_from(const std::vector<std::pair<std::string, std::string>> &edges);
+};
+
+#endif // CONNECTION_GRAPH_HPP
