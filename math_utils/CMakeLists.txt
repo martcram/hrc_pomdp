@@ -1,10 +1,12 @@
-add_library(
-    math_utils
-    "src/math_utils/math_utils.cpp"
-    "include/math_utils/math_utils.hpp"
+file(GLOB SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/math_utils/*.cpp"
 )
 
-target_include_directories(
-    math_utils PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+add_library(
+    math_utils
+    ${SOURCES}
 )
+
+target_include_directories(math_utils PUBLIC "${HEADERS}")
