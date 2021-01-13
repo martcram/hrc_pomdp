@@ -8,9 +8,11 @@ file(GLOB SOURCES
 
 include_directories(include)
 
+add_subdirectory(math_utils)
+
 add_executable(
     hrc_pomdp
     main.cpp
-
+    math_utils
     ${SOURCES}
 )
