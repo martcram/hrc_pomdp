@@ -1,12 +1,16 @@
 #ifndef ASSEMBLY_HPP
 #define ASSEMBLY_HPP
 
+#include <vector>
+#include <AndOrGraph/ObstructionGraph.hpp>
+
 class Assembly
 {
 private:
-    /* data */
+    std::vector<ObstructionGraph> obstruction_graphs;
+
 public:
-    Assembly(/* args */);
+    explicit Assembly(const std::vector<ObstructionGraph> &obstr_graphs);
     ~Assembly() = default;
 };
 
