@@ -51,6 +51,11 @@ std::vector<std::string> ConnectionGraph::get_nodes() const
     {
         nodes.push_back(it.first);
     }
-    
+
     return nodes;
+}
+
+std::vector<std::string> ConnectionGraph::get_neighbors(const std::string &node) const
+{
+    return adjacency_list.at(node);
 }
