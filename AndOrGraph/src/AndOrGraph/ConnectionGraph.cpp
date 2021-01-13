@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include "ConnectionGraph.hpp"
+#include <AndOrGraph/ConnectionGraph.hpp>
 
 ConnectionGraph::ConnectionGraph()
     : adjacency_list{}
