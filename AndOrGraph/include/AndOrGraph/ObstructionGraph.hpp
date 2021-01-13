@@ -21,6 +21,7 @@ public:
     
     ObstructionGraph reverse() const;
     std::vector<std::string> get_nodes() const;
+    std::vector<std::string> get_successors(const std::string &node) const;
 };
 
 #endif // OBSTRUCTION_GRAPH_HPP

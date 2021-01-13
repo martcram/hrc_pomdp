@@ -64,3 +64,8 @@ std::vector<std::string> ObstructionGraph::get_nodes() const
 
     return nodes;
 }
+
+std::vector<std::string> ObstructionGraph::get_successors(const std::string &node) const
+{
+    return adjacency_list.at(node);
+}
