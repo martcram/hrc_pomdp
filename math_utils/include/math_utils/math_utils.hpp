@@ -19,6 +19,27 @@ namespace math_utils
         }
         return product;
     }
+
+    // Along the lines of Anumi (2016): https://stackoverflow.com/questions/5279051
+    template <typename T>
+    std::vector<std::vector<T>> cartesian_product(const std::vector<std::vector<T>> &v)
+    {
+        std::vector<std::vector<T>> s = {{}};
+        for (const auto &u : v)
+        {
+            std::vector<std::vector<T>> r;
+            for (const auto &x : s)
+            {
+                for (const auto &y : u)
+                {
+                    r.push_back(x);
+                    r.back().push_back(y);
+                }
+            }
+            s = std::move(r);
+        }
+        return s;
+    }
 } // namespace math_utils
 
 #endif // MATH_UTILS_HPP
