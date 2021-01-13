@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include "ObstructionGraph.hpp"
+#include <AndOrGraph/ObstructionGraph.hpp>
 
 ObstructionGraph::ObstructionGraph()
     : adjacency_list{}

@@ -1,4 +1,4 @@
-#include "Node.hpp"
+#include <AndOrGraph/Node.hpp>
 
 Node::Node(const Subassembly &subassembly, double cost)
     : subassembly{subassembly}, cost{cost}
