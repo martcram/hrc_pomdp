@@ -22,6 +22,7 @@ public:
     void add_edges_from(const std::vector<std::pair<std::string, std::string>> &edges);
 
     std::vector<std::string> get_nodes() const;
+    std::vector<std::vector<std::string>> get_edges() const;
     std::vector<std::string> get_neighbors(const std::string &node) const;
 };
 

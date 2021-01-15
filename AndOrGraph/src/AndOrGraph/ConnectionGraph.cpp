@@ -59,3 +59,19 @@ std::vector<std::string> ConnectionGraph::get_neighbors(const std::string &node)
 {
     return adjacency_list.at(node);
 }
+
+std::vector<std::vector<std::string>> ConnectionGraph::get_edges() const
+{
+    std::vector<std::vector<std::string>> edges{};
+    for (auto i = adjacency_list.begin(); i != adjacency_list.end(); ++i)
+    {
+        for (auto j = i->second.begin(); j != i->second.end(); ++j)
+        {
+            std::vector<std::string> edge{i->first, *j};
+            std::sort(edge.begin(), edge.end());
+            if (std::find(edges.begin(), edges.end(), edge) == edges.end())
+                edges.push_back(edge);
+        }
+    }
+    return edges;
+}
