@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <iterator>
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -66,7 +68,22 @@ bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly) cons
     return true;
 }
 
-AndOrGraph Assembly::reversed_cutset() const 
+AndOrGraph Assembly::reversed_cutset() const
 {
-    
+    size_t num_parts{parts.size()};
+    std::map<size_t, std::vector<std::vector<std::string>>> subasm_length_map{};
+
+    std::vector<std::vector<std::string>> one_part_asms{};
+    std::transform(parts.begin(), parts.end(), std::back_inserter(one_part_asms),
+                   [](const std::string &part) { return std::vector<std::string>{part}; });
+    subasm_length_map.insert({1, one_part_asms});
+
+    std::vector<std::vector<std::string>> two_parts_asms{connection_graph.get_edges()};
+    subasm_length_map.insert({2, two_parts_asms});
+
+    std::vector<std::vector<std::string>> complete_asm{parts};
+    subasm_length_map.insert({num_parts, complete_asm});
+
+    AndOrGraph ao_graph{};
+    return ao_graph;
 }
