@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -7,8 +8,9 @@
 #include <math_utils/math_utils.hpp>
 
 Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs)
-    : obstruction_graphs{obstr_graphs}
+    : obstruction_graphs{obstr_graphs}, blocking_rules{}
 {
+    blocking_rules = this->compute_blocking_rules();
 }
 
 std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly::compute_blocking_rules() const
