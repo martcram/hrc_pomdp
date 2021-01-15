@@ -12,6 +12,7 @@
 class Assembly
 {
 private:
+    std::vector<std::string> parts;
     std::vector<ObstructionGraph> obstruction_graphs;
     ConnectionGraph connection_graph;
     AndOrGraph ao_graph;

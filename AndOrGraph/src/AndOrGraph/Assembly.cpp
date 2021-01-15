@@ -9,8 +9,9 @@
 #include <math_utils/math_utils.hpp>
 
 Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const ConnectionGraph &connect_graph)
-    : obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, ao_graph{}, blocking_rules{}
+    : parts{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, ao_graph{}, blocking_rules{}
 {
+    parts = connection_graph.get_nodes();
     blocking_rules = this->compute_blocking_rules();
 }
 
