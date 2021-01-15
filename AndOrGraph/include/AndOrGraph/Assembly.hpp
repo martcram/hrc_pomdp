@@ -19,13 +19,12 @@ private:
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_rules;
 
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> compute_blocking_rules() const;
+    bool check_geom_feasibility(std::vector<std::string> subassembly) const;
     AndOrGraph reversed_cutset() const;
 
 public:
     explicit Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const ConnectionGraph &connect_graph);
-    ~Assembly() = default;
-    
-    bool check_geom_feasibility(std::vector<std::string> subassembly) const;
+    ~Assembly() = default;  
 };
 
 #endif // ASSEMBLY_HPP
