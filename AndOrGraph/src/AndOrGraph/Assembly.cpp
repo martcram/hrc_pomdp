@@ -17,15 +17,13 @@ Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const Conn
 
 std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly::compute_blocking_rules() const
 {
-    std::vector<std::string> nodes{obstruction_graphs.at(0).get_nodes()};
-
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_parts{};
-    for (const auto &node : nodes)
+    for (const auto &node : parts)
         blocking_parts.insert({node, std::vector<std::vector<std::string>>{}});
 
     for (const auto &obstr_graph : obstruction_graphs)
     {
-        for (const auto &node : nodes)
+        for (const auto &node : parts)
         {
             std::vector<std::string> successors{obstr_graph.get_successors(node)};
             std::sort(successors.begin(), successors.end());
@@ -34,7 +32,7 @@ std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly:
     }
 
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_rules{};
-    for (const auto &node : nodes)
+    for (const auto &node : parts)
     {
         std::vector<std::vector<std::string>> product{math_utils::cartesian_product(blocking_parts.at(node))};
         for (auto &p : product)
