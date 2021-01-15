@@ -78,7 +78,10 @@ AndOrGraph Assembly::reversed_cutset() const
                    [](const std::string &part) { return std::vector<std::string>{part}; });
     subasm_length_map.insert({1, one_part_asms});
 
-    std::vector<std::vector<std::string>> two_parts_asms{connection_graph.get_edges()};
+    std::vector<std::vector<std::string>> two_parts_asms{};
+    std::vector<std::vector<std::string>> connections{connection_graph.get_edges()};
+    std::copy_if(connections.begin(), connections.end(), std::back_inserter(two_parts_asms),
+                 [this](const std::vector<std::string> &edge) { return this->check_geom_feasibility(edge); });
     subasm_length_map.insert({2, two_parts_asms});
 
     std::vector<std::vector<std::string>> complete_asm{parts};
