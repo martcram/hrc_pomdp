@@ -18,6 +18,8 @@ private:
 public:
     explicit Assembly(const std::vector<ObstructionGraph> &obstr_graphs);
     ~Assembly() = default;
+    
+    bool check_geom_feasibility(std::vector<std::string> subassembly) const;
 };
 
 #endif // ASSEMBLY_HPP

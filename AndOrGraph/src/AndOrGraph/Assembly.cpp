@@ -48,3 +48,19 @@ std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly:
 
     return blocking_rules;
 }
+
+bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly) const
+{
+    std::sort(subassembly.begin(), subassembly.end());
+    for (auto it = blocking_rules.begin(); it != blocking_rules.end(); ++it)
+    {
+        for (const auto &rule : it->second)
+        {
+            // 'rule' needs to be sorted, but was already sorted when computing blocking rules
+            bool is_subset = std::includes(subassembly.begin(), subassembly.end(), rule.begin(), rule.end());
+            if (is_subset && (std::find(subassembly.begin(), subassembly.end(), it->first) == subassembly.end()))
+                return false;
+        }
+    }
+    return true;
+}
