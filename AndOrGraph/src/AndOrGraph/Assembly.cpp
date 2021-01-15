@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <AndOrGraph/AndOrGraph.hpp>
 #include <AndOrGraph/Assembly.hpp>
 #include <AndOrGraph/ConnectionGraph.hpp>
 #include <AndOrGraph/ObstructionGraph.hpp>
@@ -63,4 +64,9 @@ bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly) cons
         }
     }
     return true;
+}
+
+AndOrGraph Assembly::reversed_cutset() const 
+{
+    
 }

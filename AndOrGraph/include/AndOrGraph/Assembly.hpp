@@ -19,6 +19,7 @@ private:
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_rules;
 
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> compute_blocking_rules() const;
+    AndOrGraph reversed_cutset() const;
 
 public:
     explicit Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const ConnectionGraph &connect_graph);
