@@ -4,10 +4,11 @@
 #include <vector>
 
 #include <AndOrGraph/Assembly.hpp>
+#include <AndOrGraph/ConnectionGraph.hpp>
 #include <AndOrGraph/ObstructionGraph.hpp>
 #include <math_utils/math_utils.hpp>
 
-Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs)
+Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const ConnectionGraph &connect_graph)
     : obstruction_graphs{obstr_graphs}, blocking_rules{}
 {
     blocking_rules = this->compute_blocking_rules();
