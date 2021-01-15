@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <AndOrGraph/AndOrGraph.hpp>
 #include <AndOrGraph/ConnectionGraph.hpp>
 #include <AndOrGraph/ObstructionGraph.hpp>
 
@@ -13,6 +14,7 @@ class Assembly
 private:
     std::vector<ObstructionGraph> obstruction_graphs;
     ConnectionGraph connection_graph;
+    AndOrGraph ao_graph;
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_rules;
 
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> compute_blocking_rules() const;
