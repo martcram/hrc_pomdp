@@ -52,9 +52,11 @@ std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly:
     return blocking_rules;
 }
 
-bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly) const
+bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly, bool is_sorted) const
 {
-    std::sort(subassembly.begin(), subassembly.end());
+    if (!is_sorted)
+        std::sort(subassembly.begin(), subassembly.end());
+
     for (auto it = blocking_rules.begin(); it != blocking_rules.end(); ++it)
     {
         for (const auto &rule : it->second)
@@ -99,7 +101,7 @@ AndOrGraph Assembly::reversed_cutset() const
                          [this, &subassemblies](auto &subassembly) {
                              std::sort(subassembly.begin(), subassembly.end());
                              return ((std::find(subassemblies.begin(), subassemblies.end(), subassembly) == subassemblies.end()) &&
-                                     this->check_geom_feasibility(subassembly));
+                                     this->check_geom_feasibility(subassembly, true));
                          });
         }
         subasm_length_map.insert({subasm_length, subassemblies});

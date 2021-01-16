@@ -19,7 +19,7 @@ private:
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_rules;
 
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> compute_blocking_rules() const;
-    bool check_geom_feasibility(std::vector<std::string> subassembly) const;
+    bool check_geom_feasibility(std::vector<std::string> subassembly, bool is_sorted = false) const;
     AndOrGraph reversed_cutset() const;
     std::vector<std::string> get_neighbors(const std::vector<std::string> &subassembly) const;
 
