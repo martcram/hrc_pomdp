@@ -90,3 +90,16 @@ AndOrGraph Assembly::reversed_cutset() const
     AndOrGraph ao_graph{};
     return ao_graph;
 }
+
+std::vector<std::string> Assembly::get_neighbors(const std::vector<std::string> &subassembly) const
+{
+    std::vector<std::string> asm_neighbors{};
+    for (const auto &part : subassembly)
+    {
+        std::vector<std::string> part_neighbors{connection_graph.get_neighbors(part)};
+        std::copy_if(part_neighbors.begin(), part_neighbors.end(), std::back_inserter(asm_neighbors),
+                     [&asm_neighbors, &subassembly](std::string &part) { return (std::find(asm_neighbors.begin(), asm_neighbors.end(), part) == asm_neighbors.end()) &&
+                                                                                (std::find(subassembly.begin(), subassembly.end(), part) == subassembly.end()); });
+    }
+    return asm_neighbors;
+}
