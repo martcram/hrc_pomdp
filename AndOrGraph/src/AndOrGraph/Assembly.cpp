@@ -87,6 +87,24 @@ AndOrGraph Assembly::reversed_cutset() const
     std::vector<std::vector<std::string>> complete_asm{parts};
     subasm_length_map.insert({num_parts, complete_asm});
 
+    for (size_t subasm_length{3}; subasm_length < num_parts; ++subasm_length)
+    {
+        std::vector<std::vector<std::string>> subassemblies{};
+        for (const auto &subassembly : subasm_length_map.at(subasm_length - 1))
+        {
+            std::vector<std::string> subasm_neighbors{this->get_neighbors(subassembly)};
+            std::vector<std::vector<std::string>> subassemblies_temp =
+                math_utils::cartesian_product(std::vector<std::vector<std::string>>{subassembly}, subasm_neighbors);
+            std::copy_if(subassemblies_temp.begin(), subassemblies_temp.end(), std::back_inserter(subassemblies),
+                         [this, &subassemblies](auto &subassembly) {
+                             std::sort(subassembly.begin(), subassembly.end());
+                             return ((std::find(subassemblies.begin(), subassemblies.end(), subassembly) == subassemblies.end()) &&
+                                     this->check_geom_feasibility(subassembly));
+                         });
+        }
+        subasm_length_map.insert({subasm_length, subassemblies});
+    }
+
     AndOrGraph ao_graph{};
     return ao_graph;
 }
