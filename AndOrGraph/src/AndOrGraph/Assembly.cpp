@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <map>
 #include <string>
@@ -111,6 +112,18 @@ AndOrGraph Assembly::reversed_cutset() const
     for (auto it = subasm_length_map.rbegin(); it != subasm_length_map.rend(); ++it)
         subassemblies.insert(subassemblies.end(), it->second.begin(), it->second.end());
 
+    for (size_t triplet3_len{num_parts}; triplet3_len >= 3; --triplet3_len)
+    {
+        for (size_t triplet1_len{triplet3_len - 1}; triplet1_len >= std::ceil(triplet3_len / 2); --triplet1_len)
+        {
+            size_t triplet2_len{triplet3_len - triplet1_len};
+            std::vector<std::vector<std::vector<std::string>>> triplets{
+                math_utils::cartesian_product(std::vector<std::vector<std::vector<std::string>>>{subasm_length_map.at(triplet1_len),
+                                                                                                 subasm_length_map.at(triplet2_len),
+                                                                                                 subasm_length_map.at(triplet3_len)})};
+        }
+    }
+    
     AndOrGraph ao_graph{};
     return ao_graph;
 }
