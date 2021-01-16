@@ -107,6 +107,10 @@ AndOrGraph Assembly::reversed_cutset() const
         subasm_length_map.insert({subasm_length, subassemblies});
     }
 
+    std::vector<std::vector<std::string>> subassemblies{};
+    for (auto it = subasm_length_map.rbegin(); it != subasm_length_map.rend(); ++it)
+        subassemblies.insert(subassemblies.end(), it->second.begin(), it->second.end());
+
     AndOrGraph ao_graph{};
     return ao_graph;
 }
