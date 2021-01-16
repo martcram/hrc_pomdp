@@ -71,6 +71,21 @@ bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly, bool
     return true;
 }
 
+bool Assembly::validate_triplet(const std::vector<std::vector<std::string>> &triplet) const
+{
+    std::vector<std::string> subasm_union{};
+    std::set_union(triplet.at(0).begin(), triplet.at(0).end(),
+                   triplet.at(1).begin(), triplet.at(1).end(),
+                   std::back_inserter(subasm_union));
+
+    std::vector<std::string> subasm_intersect{};
+    std::set_intersection(triplet.at(0).begin(), triplet.at(0).end(),
+                          triplet.at(1).begin(), triplet.at(1).end(),
+                          std::back_inserter(subasm_intersect));
+
+    return (subasm_union == triplet.at(2) && subasm_intersect.empty());
+}
+
 AndOrGraph Assembly::reversed_cutset() const
 {
     size_t num_parts{parts.size()};
@@ -121,9 +136,17 @@ AndOrGraph Assembly::reversed_cutset() const
                 math_utils::cartesian_product(std::vector<std::vector<std::vector<std::string>>>{subasm_length_map.at(triplet1_len),
                                                                                                  subasm_length_map.at(triplet2_len),
                                                                                                  subasm_length_map.at(triplet3_len)})};
+            for (auto &triplet : triplets)
+            {
+                std::sort(triplet.at(0).begin(), triplet.at(0).end());
+                std::sort(triplet.at(1).begin(), triplet.at(1).end());
+                std::sort(triplet.at(2).begin(), triplet.at(2).end());
+
+                validate_triplet(triplet);
+            }
         }
     }
-    
+
     AndOrGraph ao_graph{};
     return ao_graph;
 }
