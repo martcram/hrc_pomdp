@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -47,11 +48,8 @@ void ConnectionGraph::add_edges_from(const std::vector<std::pair<std::string, st
 std::vector<std::string> ConnectionGraph::get_nodes() const
 {
     std::vector<std::string> nodes{};
-    for (const auto &it : adjacency_list)
-    {
-        nodes.push_back(it.first);
-    }
-
+    std::transform(adjacency_list.begin(), adjacency_list.end(), std::back_inserter(nodes),
+                   [](const auto &it) { return it.first; });
     return nodes;
 }
 
