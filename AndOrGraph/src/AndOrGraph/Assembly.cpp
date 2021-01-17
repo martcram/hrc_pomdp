@@ -133,7 +133,7 @@ AndOrGraph Assembly::reversed_cutset() const
 
     for (size_t triplet3_len{num_parts}; triplet3_len >= 3; --triplet3_len)
     {
-        for (size_t triplet1_len{triplet3_len - 1}; triplet1_len >= std::ceil(triplet3_len / 2); --triplet1_len)
+        for (size_t triplet1_len{triplet3_len - 1}; triplet1_len >= std::ceil(triplet3_len / 2.0); --triplet1_len)
         {
             size_t triplet2_len{triplet3_len - triplet1_len};
             std::vector<std::vector<std::vector<std::string>>> triplets{
