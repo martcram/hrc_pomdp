@@ -90,7 +90,7 @@ bool Assembly::validate_triplet(std::vector<std::vector<std::string>> triplet) c
     return (subasm_union == triplet.at(2) && subasm_intersect.empty());
 }
 
-AndOrGraph Assembly::reversed_cutset() const
+std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() const
 {
     size_t num_parts{parts.size()};
     std::map<size_t, std::vector<std::vector<std::string>>> subasm_length_map{};
@@ -152,9 +152,7 @@ AndOrGraph Assembly::reversed_cutset() const
                                                                                                 {two_parts_asm.at(1)},
                                                                                                 two_parts_asm}; });
     cutsets.insert(cutsets.end(), two_parts_cutsets.begin(), two_parts_cutsets.end());
-
-    AndOrGraph ao_graph{};
-    return ao_graph;
+    return cutsets;
 }
 
 std::vector<std::string> Assembly::get_neighbors(const std::vector<std::string> &subassembly) const

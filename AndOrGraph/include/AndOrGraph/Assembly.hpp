@@ -21,7 +21,7 @@ private:
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> compute_blocking_rules() const;
     bool check_geom_feasibility(std::vector<std::string> subassembly, bool is_sorted = false) const;
     bool validate_triplet(std::vector<std::vector<std::string>> triplet) const;
-    AndOrGraph reversed_cutset() const;
+    std::vector<std::vector<std::vector<std::string>>> reversed_cutset() const;
     std::vector<std::string> get_neighbors(const std::vector<std::string> &subassembly) const;
 
 public:
