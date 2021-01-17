@@ -20,3 +20,13 @@ bool AndEdge::operator==(const AndEdge &rhs) const
     }
     return (this->parent_node == rhs.parent_node);
 }
+
+Node AndEdge::get_parent_node() const
+{
+    return parent_node;
+}
+
+std::vector<Node> AndEdge::get_child_nodes() const
+{
+    return child_nodes;
+}

@@ -18,6 +18,8 @@ public:
     ~AndEdge() = default;
 
     bool operator==(const AndEdge &rhs) const;
+    Node get_parent_node() const;
+    std::vector<Node> get_child_nodes() const;
 };
 
 #endif // AND_EDGE_HPP
