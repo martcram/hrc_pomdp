@@ -1,18 +1,19 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include "Subassembly.hpp"
+#include <string>
+#include <vector>
 
 class Node
 {
 private:
     static constexpr double def_cost = 0.0;
 
-    Subassembly subassembly;
+    std::vector<std::string> subassembly;
     double cost;
 
 public:
-    explicit Node(const Subassembly &subassembly, double cost = def_cost);
+    explicit Node(const std::vector<std::string> &subassembly, double cost = def_cost);
     ~Node() = default;
 
     bool operator==(const Node &rhs) const;

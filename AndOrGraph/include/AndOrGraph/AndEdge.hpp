@@ -2,7 +2,7 @@
 #define AND_EDGE_HPP
 
 #include <vector>
-#include "Node.hpp"
+#include <AndOrGraph/Node.hpp>
 
 class AndEdge
 {
@@ -17,7 +17,9 @@ public:
     explicit AndEdge(const Node &parent_node, const std::vector<Node> &child_nodes, double cost = def_cost);
     ~AndEdge() = default;
 
-    bool operator==(const AndEdge &rhs);
+    bool operator==(const AndEdge &rhs) const;
+    Node get_parent_node() const;
+    std::vector<Node> get_child_nodes() const;
 };
 
 #endif // AND_EDGE_HPP
