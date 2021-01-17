@@ -26,3 +26,13 @@ void AndOrGraph::add_edges_from(const std::vector<AndEdge> &edges)
     for (const auto &edge : edges)
         this->add_edge(edge);
 }
+
+std::vector<AndEdge> AndOrGraph::get_edges() const
+{
+    return edges;
+}
+
+std::vector<Node> AndOrGraph::get_nodes() const
+{
+    return nodes;
+}

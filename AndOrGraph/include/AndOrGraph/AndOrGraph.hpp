@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "AndEdge.hpp"
-#include "Node.hpp"
+#include <AndOrGraph/AndEdge.hpp>
+#include <AndOrGraph/Node.hpp>
 
 class AndOrGraph
 {
@@ -19,6 +19,9 @@ public:
 
     void add_edge(const AndEdge &edge);
     void add_edges_from(const std::vector<AndEdge> &edges);
+
+    std::vector<AndEdge> get_edges() const;
+    std::vector<Node> get_nodes() const;
 };
 
 #endif // AND_OR_GRAPH_HPP
