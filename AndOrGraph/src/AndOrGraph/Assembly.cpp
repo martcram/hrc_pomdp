@@ -146,6 +146,13 @@ AndOrGraph Assembly::reversed_cutset() const
         }
     }
 
+    std::vector<std::vector<std::vector<std::string>>> two_parts_cutsets{};
+    std::transform(two_parts_asms.begin(), two_parts_asms.end(), std::back_inserter(two_parts_cutsets),
+                   [](const auto &two_parts_asm) { return std::vector<std::vector<std::string>>{{two_parts_asm.at(0)},
+                                                                                                {two_parts_asm.at(1)},
+                                                                                                two_parts_asm}; });
+    cutsets.insert(cutsets.end(), two_parts_cutsets.begin(), two_parts_cutsets.end());
+
     AndOrGraph ao_graph{};
     return ao_graph;
 }
