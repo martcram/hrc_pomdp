@@ -148,9 +148,11 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
 
     std::vector<std::vector<std::vector<std::string>>> two_parts_cutsets{};
     std::transform(two_parts_asms.begin(), two_parts_asms.end(), std::back_inserter(two_parts_cutsets),
-                   [](const auto &two_parts_asm) { return std::vector<std::vector<std::string>>{{two_parts_asm.at(0)},
-                                                                                                {two_parts_asm.at(1)},
-                                                                                                two_parts_asm}; });
+                   [](const auto &two_parts_asm) {
+                       return std::vector<std::vector<std::string>>{{two_parts_asm.at(0)},
+                                                                    {two_parts_asm.at(1)},
+                                                                    two_parts_asm};
+                   });
     cutsets.insert(cutsets.end(), two_parts_cutsets.begin(), two_parts_cutsets.end());
     return cutsets;
 }
@@ -162,8 +164,10 @@ std::vector<std::string> Assembly::get_neighbors(const std::vector<std::string> 
     {
         std::vector<std::string> part_neighbors{connection_graph.get_neighbors(part)};
         std::copy_if(part_neighbors.begin(), part_neighbors.end(), std::back_inserter(asm_neighbors),
-                     [&asm_neighbors, &subassembly](std::string &part) { return (std::find(asm_neighbors.begin(), asm_neighbors.end(), part) == asm_neighbors.end()) &&
-                                                                                (std::find(subassembly.begin(), subassembly.end(), part) == subassembly.end()); });
+                     [&asm_neighbors, &subassembly](std::string &part) {
+                         return (std::find(asm_neighbors.begin(), asm_neighbors.end(), part) == asm_neighbors.end()) &&
+                                (std::find(subassembly.begin(), subassembly.end(), part) == subassembly.end());
+                     });
     }
     return asm_neighbors;
 }
