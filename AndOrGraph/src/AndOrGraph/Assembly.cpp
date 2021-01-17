@@ -71,8 +71,12 @@ bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly, bool
     return true;
 }
 
-bool Assembly::validate_triplet(const std::vector<std::vector<std::string>> &triplet) const
+bool Assembly::validate_triplet(std::vector<std::vector<std::string>> triplet) const
 {
+    std::sort(triplet.at(0).begin(), triplet.at(0).end());
+    std::sort(triplet.at(1).begin(), triplet.at(1).end());
+    std::sort(triplet.at(2).begin(), triplet.at(2).end());
+
     std::vector<std::string> subasm_union{};
     std::set_union(triplet.at(0).begin(), triplet.at(0).end(),
                    triplet.at(1).begin(), triplet.at(1).end(),
@@ -138,11 +142,8 @@ AndOrGraph Assembly::reversed_cutset() const
                                                                                                  subasm_length_map.at(triplet3_len)})};
             for (auto &triplet : triplets)
             {
-                std::sort(triplet.at(0).begin(), triplet.at(0).end());
-                std::sort(triplet.at(1).begin(), triplet.at(1).end());
-                std::sort(triplet.at(2).begin(), triplet.at(2).end());
-
                 validate_triplet(triplet);
+
             }
         }
     }
