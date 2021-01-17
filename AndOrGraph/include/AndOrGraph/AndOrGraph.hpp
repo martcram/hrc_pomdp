@@ -14,7 +14,7 @@ private:
 
 public:
     AndOrGraph();
-    AndOrGraph(const std::vector<Node> &nodes, const std::vector<AndEdge> &edges);
+    explicit AndOrGraph(const std::vector<AndEdge> &edges);
     ~AndOrGraph() = default;
 
     void add_edge(const AndEdge &edge);

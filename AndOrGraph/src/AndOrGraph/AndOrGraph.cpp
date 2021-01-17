@@ -10,8 +10,8 @@ AndOrGraph::AndOrGraph()
 {
 }
 
-AndOrGraph::AndOrGraph(const std::vector<Node> &nodes, const std::vector<AndEdge> &edges)
-    : nodes{nodes}, edges{edges}
+AndOrGraph::AndOrGraph(const std::vector<AndEdge> &edges)
+    : nodes{}, edges{edges}
 {
 }
 
