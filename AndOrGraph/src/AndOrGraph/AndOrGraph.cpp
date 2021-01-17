@@ -11,14 +11,19 @@ AndOrGraph::AndOrGraph()
 }
 
 AndOrGraph::AndOrGraph(const std::vector<AndEdge> &edges)
-    : nodes{}, edges{edges}
+    : AndOrGraph{}
 {
+    this->add_edges_from(edges);
 }
 
 void AndOrGraph::add_edge(const AndEdge &edge)
 {
     if (std::find(edges.begin(), edges.end(), edge) == edges.end())
         edges.push_back(edge);
+
+    std::vector<Node> edge_nodes{edge.get_child_nodes()};
+    edge_nodes.push_back(edge.get_parent_node());
+    this->add_nodes_from(edge_nodes);
 }
 
 void AndOrGraph::add_edges_from(const std::vector<AndEdge> &edges)
