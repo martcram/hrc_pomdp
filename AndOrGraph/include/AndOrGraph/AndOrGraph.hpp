@@ -11,6 +11,9 @@ class AndOrGraph
 private:
     std::vector<Node> nodes;
     std::vector<AndEdge> edges;
+    
+    void add_node(const Node &node);
+    void add_nodes_from(const std::vector<Node> &nodes);
 
 public:
     AndOrGraph();
