@@ -53,11 +53,8 @@ std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly:
     return blocking_rules;
 }
 
-bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly, bool is_sorted) const
+bool Assembly::check_geom_feasibility(const std::vector<std::string> &subassembly) const
 {
-    if (!is_sorted)
-        std::sort(subassembly.begin(), subassembly.end());
-
     for (auto it = blocking_rules.begin(); it != blocking_rules.end(); ++it)
     {
         for (const auto &rule : it->second)
@@ -71,12 +68,8 @@ bool Assembly::check_geom_feasibility(std::vector<std::string> subassembly, bool
     return true;
 }
 
-bool Assembly::validate_triplet(std::vector<std::vector<std::string>> triplet) const
+bool Assembly::validate_triplet(const std::vector<std::vector<std::string>> &triplet) const
 {
-    std::sort(triplet.at(0).begin(), triplet.at(0).end());
-    std::sort(triplet.at(1).begin(), triplet.at(1).end());
-    std::sort(triplet.at(2).begin(), triplet.at(2).end());
-
     std::vector<std::string> subasm_union{};
     std::set_union(triplet.at(0).begin(), triplet.at(0).end(),
                    triplet.at(1).begin(), triplet.at(1).end(),
@@ -103,7 +96,10 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
     std::vector<std::vector<std::string>> two_parts_asms{};
     std::vector<std::vector<std::string>> connections{connection_graph.get_edges()};
     std::copy_if(connections.begin(), connections.end(), std::back_inserter(two_parts_asms),
-                 [this](const std::vector<std::string> &edge) { return this->check_geom_feasibility(edge); });
+                 [this](std::vector<std::string> &edge) {
+                     std::sort(edge.begin(), edge.end());
+                     return this->check_geom_feasibility(edge);
+                 });
     subasm_length_map.insert({2, two_parts_asms});
 
     std::vector<std::vector<std::string>> complete_asm{parts};
@@ -115,13 +111,13 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
         for (const auto &subassembly : subasm_length_map.at(subasm_length - 1))
         {
             std::vector<std::string> subasm_neighbors{this->get_neighbors(subassembly)};
-            std::vector<std::vector<std::string>> subassemblies_temp =
-                math_utils::cartesian_product(std::vector<std::vector<std::string>>{subassembly}, subasm_neighbors);
+            std::vector<std::vector<std::string>> subassemblies_temp{
+                math_utils::cartesian_product(std::vector<std::vector<std::string>>{subassembly}, subasm_neighbors)};
             std::copy_if(subassemblies_temp.begin(), subassemblies_temp.end(), std::back_inserter(subassemblies),
                          [this, &subassemblies](auto &subassembly) {
                              std::sort(subassembly.begin(), subassembly.end());
                              return ((std::find(subassemblies.begin(), subassemblies.end(), subassembly) == subassemblies.end()) &&
-                                     this->check_geom_feasibility(subassembly, true));
+                                     this->check_geom_feasibility(subassembly));
                          });
         }
         subasm_length_map.insert({subasm_length, subassemblies});
@@ -142,7 +138,12 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
                                                                                                  subasm_length_map.at(triplet2_len),
                                                                                                  subasm_length_map.at(triplet3_len)})};
             std::copy_if(triplets.begin(), triplets.end(), std::back_inserter(cutsets),
-                         [this](const auto &triplet) { return this->validate_triplet(triplet); });
+                         [this](auto &triplet) {
+                             std::sort(triplet.at(0).begin(), triplet.at(0).end());
+                             std::sort(triplet.at(1).begin(), triplet.at(1).end());
+                             std::sort(triplet.at(2).begin(), triplet.at(2).end());
+                             return this->validate_triplet(triplet);
+                         });
         }
     }
 
@@ -154,6 +155,7 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
                                                                     two_parts_asm};
                    });
     cutsets.insert(cutsets.end(), two_parts_cutsets.begin(), two_parts_cutsets.end());
+    
     return cutsets;
 }
 
