@@ -131,6 +131,7 @@ AndOrGraph Assembly::reversed_cutset() const
     for (auto it = subasm_length_map.rbegin(); it != subasm_length_map.rend(); ++it)
         subassemblies.insert(subassemblies.end(), it->second.begin(), it->second.end());
 
+    std::vector<std::vector<std::vector<std::string>>> cutsets{};
     for (size_t triplet3_len{num_parts}; triplet3_len >= 3; --triplet3_len)
     {
         for (size_t triplet1_len{triplet3_len - 1}; triplet1_len >= std::ceil(triplet3_len / 2.0); --triplet1_len)
@@ -140,11 +141,8 @@ AndOrGraph Assembly::reversed_cutset() const
                 math_utils::cartesian_product(std::vector<std::vector<std::vector<std::string>>>{subasm_length_map.at(triplet1_len),
                                                                                                  subasm_length_map.at(triplet2_len),
                                                                                                  subasm_length_map.at(triplet3_len)})};
-            for (auto &triplet : triplets)
-            {
-                validate_triplet(triplet);
-
-            }
+            std::copy_if(triplets.begin(), triplets.end(), std::back_inserter(cutsets),
+                         [this](const auto &triplet) { return this->validate_triplet(triplet); });
         }
     }
 
