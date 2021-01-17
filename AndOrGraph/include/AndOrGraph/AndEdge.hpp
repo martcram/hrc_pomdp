@@ -17,7 +17,7 @@ public:
     explicit AndEdge(const Node &parent_node, const std::vector<Node> &child_nodes, double cost = def_cost);
     ~AndEdge() = default;
 
-    bool operator==(const AndEdge &rhs);
+    bool operator==(const AndEdge &rhs) const;
 };
 
 #endif // AND_EDGE_HPP
