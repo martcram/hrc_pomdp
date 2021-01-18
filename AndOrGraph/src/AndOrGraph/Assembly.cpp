@@ -17,6 +17,7 @@ Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const Conn
 {
     parts = connection_graph.get_nodes();
     blocking_rules = this->compute_blocking_rules();
+    ao_graph = AndOrGraph{this->reversed_cutset()};
 }
 
 std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly::compute_blocking_rules() const
@@ -155,7 +156,7 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
                                                                     two_parts_asm};
                    });
     cutsets.insert(cutsets.end(), two_parts_cutsets.begin(), two_parts_cutsets.end());
-    
+
     return cutsets;
 }
 
