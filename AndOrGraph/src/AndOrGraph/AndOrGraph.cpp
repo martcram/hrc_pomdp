@@ -16,6 +16,17 @@ AndOrGraph::AndOrGraph(const std::vector<AndEdge> &edges)
     this->add_edges_from(edges);
 }
 
+AndOrGraph::AndOrGraph(const std::vector<std::vector<std::vector<std::string>>> &cutsets)
+{
+    for (const auto &cutset : cutsets)
+    {
+        Node parent_node{cutset.at(2)};
+        std::vector<Node> child_nodes{Node{cutset.at(0)}, Node{cutset.at(1)}};
+        AndEdge edge{parent_node, child_nodes};
+        this->add_edge(edge);
+    }
+}
+
 void AndOrGraph::add_edge(const AndEdge &edge)
 {
     if (std::find(edges.begin(), edges.end(), edge) == edges.end())
