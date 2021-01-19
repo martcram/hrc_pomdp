@@ -46,6 +46,11 @@ public:
         for (const auto &edge : edges)
             this->add_edge(edge.first, edge.second);
     }
+
+    std::vector<T> get_neighbors(const T &u) const
+    {
+        return adjacency_list.at(u);
+    }
 };
 
 #endif // GRAPH_HPP
