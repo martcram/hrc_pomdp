@@ -41,6 +41,17 @@ public:
             this->add_edge(edge.first, edge.second);
     }
 
+    DiGraph reverse() const
+    {
+        DiGraph reversed_graph{};
+        for (const auto &it : adjacency_list)
+        {
+            for (const auto &node : it.second)
+                reversed_graph.add_edge(node, it.first);
+        }
+        return reversed_graph;
+    }
+
     std::vector<T> get_successors(const T &u) const
     {
         return adjacency_list.at(u);
