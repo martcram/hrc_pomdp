@@ -33,6 +33,18 @@ public:
     }
 
     ~Graph() = default;
+
+    void add_edge(const T &u, const T &v)
+    {
+        this->add_directed_edge(u, v);
+        this->add_directed_edge(v, u);
+    }
+
+    void add_edges(const std::vector<std::pair<T, T>> &edges)
+    {
+        for (const auto &edge : edges)
+            this->add_edge(edge.first, edge.second);
+    }
 };
 
 #endif // GRAPH_HPP
