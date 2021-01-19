@@ -21,6 +21,7 @@ public:
     explicit DiGraph(const std::vector<std::pair<T, T>> &edges)
         : DiGraph()
     {
+        this->add_edges(edges);
     }
 
     ~DiGraph() = default;
