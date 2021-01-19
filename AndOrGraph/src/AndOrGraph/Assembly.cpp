@@ -9,8 +9,6 @@
 
 #include <AndOrGraph/AndOrGraph.hpp>
 #include <AndOrGraph/Assembly.hpp>
-#include <AndOrGraph/ConnectionGraph.hpp>
-#include <AndOrGraph/ObstructionGraph.hpp>
 
 #include <graph/Graph.hpp>
 #include <graph/DiGraph.hpp>
