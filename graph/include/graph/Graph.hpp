@@ -51,6 +51,29 @@ public:
     {
         return adjacency_list.at(u);
     }
+
+    std::vector<T> get_nodes() const
+    {
+        std::vector<T> nodes{};
+        std::transform(adjacency_list.begin(), adjacency_list.end(), std::back_inserter(nodes),
+                       [](const auto &it) { return it.first; });
+        return nodes;
+    }
+
+    std::vector<std::pair<T, T>> get_edges() const
+    {
+        std::vector<std::pair<T, T>> edges{};
+        for (auto i = adjacency_list.begin(); i != adjacency_list.end(); ++i)
+        {
+            for (auto j = i->second.begin(); j != i->second.end(); ++j)
+            {
+                std::pair<T, T> edge = ((i->first < *j) ? std::make_pair(i->first, *j) : std::make_pair(*j, i->first));
+                if (std::find(edges.begin(), edges.end(), edge) == edges.end())
+                    edges.push_back(edge);
+            }
+        }
+        return edges;
+    }
 };
 
 #endif // GRAPH_HPP
