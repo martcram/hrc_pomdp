@@ -2,6 +2,7 @@
 #define GRAPH_HPP
 
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 template <typename T>
@@ -11,7 +12,16 @@ private:
     std::unordered_map<T, std::vector<T>> adjacency_list;
 
 public:
-    Graph();
+    Graph()
+        : adjacency_list{}
+    {
+    }
+
+    explicit Graph(const std::vector<std::pair<T, T>> &edges)
+        : adjacency_list{}
+    {
+    }
+
     ~Graph() = default;
 };
 
