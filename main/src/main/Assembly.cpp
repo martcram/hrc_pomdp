@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <AndOrGraph/Assembly.hpp>
+#include <main/Assembly.hpp>
 
 #include <graph/AndOrGraph.hpp>
 #include <graph/Graph.hpp>
