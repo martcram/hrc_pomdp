@@ -49,7 +49,11 @@ public:
 
     std::vector<T> get_neighbors(const T &u) const
     {
-        return adjacency_list.at(u);
+        auto it = adjacency_list.find(u);
+        if (it == adjacency_list.end())
+            return std::vector<T>{};
+        else
+            return it->second;
     }
 
     std::vector<T> get_nodes() const
