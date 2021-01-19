@@ -1,6 +1,7 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+#include <algorithm>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -10,6 +11,15 @@ class Graph
 {
 private:
     std::unordered_map<T, std::vector<T>> adjacency_list;
+
+    void add_directed_edge(const T &u, const T &v)
+    {
+        auto it = adjacency_list.find(u);
+        if (it == adjacency_list.end())
+            adjacency_list.emplace(std::make_pair(u, std::vector<T>{v}));
+        else if (std::find(it->second.begin(), it->second.end(), v) == it->second.end())
+            it->second.push_back(v);
+    }
 
 public:
     Graph()
