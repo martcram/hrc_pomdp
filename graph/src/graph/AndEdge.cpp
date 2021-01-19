@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <vector>
 
-#include <AndOrGraph/AndEdge.hpp>
-#include <AndOrGraph/Node.hpp>
+#include <graph/AndEdge.hpp>
+#include <graph/Node.hpp>
 
 AndEdge::AndEdge(const Node &parent_node, const std::vector<Node> &child_nodes, double cost)
     : parent_node{parent_node}, child_nodes{child_nodes}, cost{cost}

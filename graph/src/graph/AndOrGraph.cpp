@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <vector>
 
-#include <AndOrGraph/AndEdge.hpp>
-#include <AndOrGraph/AndOrGraph.hpp>
-#include <AndOrGraph/Node.hpp>
+#include <graph/AndEdge.hpp>
+#include <graph/AndOrGraph.hpp>
+#include <graph/Node.hpp>
 
 AndOrGraph::AndOrGraph()
     : nodes{}, edges{}

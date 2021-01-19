@@ -5,8 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <AndOrGraph/AndOrGraph.hpp>
-
+#include <graph/AndOrGraph.hpp>
 #include <graph/Graph.hpp>
 #include <graph/DiGraph.hpp>
 

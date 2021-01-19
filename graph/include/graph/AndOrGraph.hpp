@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include <AndOrGraph/AndEdge.hpp>
-#include <AndOrGraph/Node.hpp>
+#include <graph/AndEdge.hpp>
+#include <graph/Node.hpp>
 
 class AndOrGraph
 {

@@ -2,7 +2,8 @@
 #define AND_EDGE_HPP
 
 #include <vector>
-#include <AndOrGraph/Node.hpp>
+
+#include <graph/Node.hpp>
 
 class AndEdge
 {

@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-#include <AndOrGraph/Node.hpp>
+#include <graph/Node.hpp>
 
 Node::Node(const std::vector<std::string> &subassembly, double cost)
     : subassembly{subassembly}, cost{cost}
