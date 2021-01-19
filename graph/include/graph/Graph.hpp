@@ -28,8 +28,9 @@ public:
     }
 
     explicit Graph(const std::vector<std::pair<T, T>> &edges)
-        : adjacency_list{}
+        : Graph()
     {
+        this->add_edges(edges);
     }
 
     ~Graph() = default;
