@@ -10,4 +10,4 @@ add_library(
 )
 
 target_include_directories(AndOrGraph PUBLIC "${HEADERS}")
-target_link_libraries(AndOrGraph PUBLIC math_utils)
+target_link_libraries(AndOrGraph PUBLIC graph math_utils)

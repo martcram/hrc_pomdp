@@ -3,6 +3,7 @@
 #include <iterator>
 #include <map>
 #include <string>
+#include <utility>
 #include <unordered_map>
 #include <vector>
 
@@ -10,9 +11,13 @@
 #include <AndOrGraph/Assembly.hpp>
 #include <AndOrGraph/ConnectionGraph.hpp>
 #include <AndOrGraph/ObstructionGraph.hpp>
+
+#include <graph/Graph.hpp>
+#include <graph/DiGraph.hpp>
+
 #include <math_utils/math_utils.hpp>
 
-Assembly::Assembly(const std::vector<ObstructionGraph> &obstr_graphs, const ConnectionGraph &connect_graph)
+Assembly::Assembly(const std::vector<DiGraph<std::string>> &obstr_graphs, const Graph<std::string> &connect_graph)
     : parts{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, ao_graph{}, blocking_rules{}
 {
     parts = connection_graph.get_nodes();
@@ -94,8 +99,14 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
                    [](const std::string &part) { return std::vector<std::string>{part}; });
     subasm_length_map.insert({1, one_part_asms});
 
+    std::vector<std::vector<std::string>> connections{};
+    std::vector<std::pair<std::string, std::string>> pair_connections{connection_graph.get_edges()};
+    std::transform(pair_connections.begin(), pair_connections.end(), std::back_inserter(connections),
+                   [](const auto &connection) {
+                       return std::vector<std::string>{connection.first, connection.second};
+                   });
+
     std::vector<std::vector<std::string>> two_parts_asms{};
-    std::vector<std::vector<std::string>> connections{connection_graph.get_edges()};
     std::copy_if(connections.begin(), connections.end(), std::back_inserter(two_parts_asms),
                  [this](std::vector<std::string> &edge) {
                      std::sort(edge.begin(), edge.end());
