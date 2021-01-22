@@ -17,6 +17,14 @@ public:
     ~Node() = default;
 
     bool operator==(const Node &rhs) const;
+
+    std::vector<std::string> get_subassembly() const;
+    double get_cost() const;
+};
+
+struct NodeHasher
+{
+    std::size_t operator()(const Node &n) const;
 };
 
 #endif // NODE_HPP
