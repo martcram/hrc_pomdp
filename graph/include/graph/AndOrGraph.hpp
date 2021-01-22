@@ -32,6 +32,8 @@ public:
     std::vector<Node> get_nodes() const;
     std::vector<AndEdge> get_incoming_edges(const Node &node) const;
     std::vector<AndEdge> get_outgoing_edges(const Node &node) const;
+    std::vector<Node> get_root_nodes() const;
+    std::vector<Node> get_leaf_nodes() const;
 };
 
 #endif // AND_OR_GRAPH_HPP

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 #include <graph/AndEdge.hpp>
@@ -101,4 +102,20 @@ std::vector<AndEdge> AndOrGraph::get_outgoing_edges(const Node &node) const
         return std::vector<AndEdge>{};
     else
         return it->second;
+}
+
+std::vector<Node> AndOrGraph::get_root_nodes() const
+{
+    std::vector<Node> root_nodes{};
+    std::copy_if(nodes.begin(), nodes.end(), std::back_inserter(root_nodes),
+                 [this](const auto &node) { return this->get_incoming_edges(node).empty(); });
+    return root_nodes;
+}
+
+std::vector<Node> AndOrGraph::get_leaf_nodes() const
+{
+    std::vector<Node> leaf_nodes{};
+    std::copy_if(nodes.begin(), nodes.end(), std::back_inserter(leaf_nodes),
+                 [this](const auto &node) { return this->get_outgoing_edges(node).empty(); });
+    return leaf_nodes;
 }
