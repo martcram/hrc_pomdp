@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/functional/hash.hpp>
+
 class Node
 {
 private:
@@ -22,9 +24,33 @@ public:
     double get_cost() const;
 };
 
-struct NodeHasher
+// Custom specialization of std::hash injected in namespace std to deal with key types: Node, std::vector<Node>.
+namespace std
 {
-    std::size_t operator()(const Node &n) const;
-};
+    template <>
+    struct hash<Node>
+    {
+        std::size_t operator()(Node const &n) const noexcept
+        {
+            std::size_t seed{0};
+            boost::hash_combine(seed, boost::hash_value(n.get_subassembly()));
+            // For now, the node cost isn't used for calculating the hash value.
+            //boost::hash_combine(seed, boost::hash_value(n.get_cost()));
+            return seed;
+        }
+    };
+
+    template <>
+    struct hash<std::vector<Node>>
+    {
+        std::size_t operator()(std::vector<Node> const &nodes) const noexcept
+        {
+            size_t seed{0};
+            for (const auto &node : nodes)
+                boost::hash_combine(seed, std::hash<Node>{}(node));
+            return seed;
+        }
+    };
+} // namespace std
 
 #endif // NODE_HPP

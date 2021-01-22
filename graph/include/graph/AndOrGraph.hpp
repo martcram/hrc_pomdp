@@ -12,9 +12,9 @@ class AndOrGraph
 private:
     std::vector<Node> nodes;
     std::vector<AndEdge> edges;
-    
-    std::unordered_map<Node, std::vector<AndEdge>, NodeHasher> incoming_edges{};
-    std::unordered_map<Node, std::vector<AndEdge>, NodeHasher> outgoing_edges{};
+
+    std::unordered_map<Node, std::vector<AndEdge>> incoming_edges{};
+    std::unordered_map<Node, std::vector<AndEdge>> outgoing_edges{};
 
     void add_node(const Node &node);
     void add_nodes_from(const std::vector<Node> &nodes);
