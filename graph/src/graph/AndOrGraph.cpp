@@ -41,20 +41,20 @@ void AndOrGraph::add_edge(const AndEdge &edge)
 
     // Add edge to parent node's outgoing edges.
     Node parent_node{edge.get_parent_node()};
-    auto it = outgoing_edges.find(parent_node);
-    if (it == outgoing_edges.end())
+    auto i = outgoing_edges.find(parent_node);
+    if (i == outgoing_edges.end())
         outgoing_edges.insert({parent_node, std::vector<AndEdge>{edge}});
     else
-        it->second.push_back(edge);
+        i->second.push_back(edge);
 
     // Add edge to child nodes' incoming edges.
     for (const auto &child_node : edge.get_child_nodes())
     {
-        auto it = incoming_edges.find(child_node);
-        if (it == incoming_edges.end())
+        auto j = incoming_edges.find(child_node);
+        if (j == incoming_edges.end())
             incoming_edges.insert({child_node, std::vector<AndEdge>{edge}});
         else
-            it->second.push_back(edge);
+            j->second.push_back(edge);
     }
 }
 
