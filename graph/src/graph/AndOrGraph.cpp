@@ -84,3 +84,21 @@ std::vector<Node> AndOrGraph::get_nodes() const
 {
     return nodes;
 }
+
+std::vector<AndEdge> AndOrGraph::get_incoming_edges(const Node &node) const
+{
+    auto it = incoming_edges.find(node);
+    if (it == incoming_edges.end())
+        return std::vector<AndEdge>{};
+    else
+        return it->second;
+}
+
+std::vector<AndEdge> AndOrGraph::get_outgoing_edges(const Node &node) const
+{
+    auto it = outgoing_edges.find(node);
+    if (it == outgoing_edges.end())
+        return std::vector<AndEdge>{};
+    else
+        return it->second;
+}
