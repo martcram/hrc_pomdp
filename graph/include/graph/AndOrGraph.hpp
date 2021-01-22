@@ -1,6 +1,7 @@
 #ifndef AND_OR_GRAPH_HPP
 #define AND_OR_GRAPH_HPP
 
+#include <unordered_map>
 #include <vector>
 
 #include <graph/AndEdge.hpp>
@@ -12,6 +13,9 @@ private:
     std::vector<Node> nodes;
     std::vector<AndEdge> edges;
     
+    std::unordered_map<Node, std::vector<AndEdge>, NodeHasher> incoming_edges{};
+    std::unordered_map<Node, std::vector<AndEdge>, NodeHasher> outgoing_edges{};
+
     void add_node(const Node &node);
     void add_nodes_from(const std::vector<Node> &nodes);
 

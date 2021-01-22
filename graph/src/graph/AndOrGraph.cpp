@@ -29,12 +29,32 @@ AndOrGraph::AndOrGraph(const std::vector<std::vector<std::vector<std::string>>> 
 
 void AndOrGraph::add_edge(const AndEdge &edge)
 {
+    // Add edge to edges
     if (std::find(edges.begin(), edges.end(), edge) == edges.end())
         edges.push_back(edge);
 
+    // Add edge nodes to nodes
     std::vector<Node> edge_nodes{edge.get_child_nodes()};
     edge_nodes.push_back(edge.get_parent_node());
     this->add_nodes_from(edge_nodes);
+
+    // Add edge to parent node's outgoing edges.
+    Node parent_node{edge.get_parent_node()};
+    auto it = outgoing_edges.find(parent_node);
+    if (it == outgoing_edges.end())
+        outgoing_edges.insert({parent_node, std::vector<AndEdge>{edge}});
+    else
+        it->second.push_back(edge);
+
+    // Add edge to child nodes' incoming edges.
+    for (const auto &child_node : edge.get_child_nodes())
+    {
+        auto it = incoming_edges.find(child_node);
+        if (it == incoming_edges.end())
+            incoming_edges.insert({child_node, std::vector<AndEdge>{edge}});
+        else
+            it->second.push_back(edge);
+    }
 }
 
 void AndOrGraph::add_edges_from(const std::vector<AndEdge> &edges)
