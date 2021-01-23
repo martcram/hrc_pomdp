@@ -28,8 +28,8 @@ void Node::print(std::ostream &os) const
     for (const auto &part : subassembly)
         os << part << ' ';
 
-    os << "| " << cost
-       << " ]"
+    //os << "| " << cost;
+    os << "]"
        << std::resetiosflags(std::ios::fixed) << std::setprecision(ss);
 }
 
