@@ -5,6 +5,7 @@
 #include <graph/AndEdge.hpp>
 #include <graph/AndOrGraph.hpp>
 #include <graph/Node.hpp>
+#include <graph/StateGraph.hpp>
 
 AndOrGraph::AndOrGraph()
     : nodes{}, edges{}
@@ -118,4 +119,33 @@ std::vector<Node> AndOrGraph::get_leaf_nodes() const
     std::copy_if(nodes.begin(), nodes.end(), std::back_inserter(leaf_nodes),
                  [this](const auto &node) { return this->get_outgoing_edges(node).empty(); });
     return leaf_nodes;
+}
+
+StateGraph AndOrGraph::convert_to_state_graph() const
+{
+    StateGraph state_graph{};
+    std::vector<std::vector<Node>> open_states{this->get_root_nodes()};
+
+    while (!open_states.empty())
+    {
+        std::vector<Node> open_state{open_states.back()};
+        open_states.pop_back();
+
+        for (const auto &node : open_state)
+        {
+            for (const auto &outgoing_edge : this->get_outgoing_edges(node))
+            {
+                std::vector<Node> successor_state{open_state};
+                successor_state.erase(std::find(successor_state.begin(), successor_state.end(), node));
+
+                std::vector<Node> child_nodes{outgoing_edge.get_child_nodes()};
+                successor_state.insert(successor_state.end(), child_nodes.begin(), child_nodes.end());
+                std::sort(successor_state.begin(), successor_state.end());
+
+                state_graph.add_edge(open_state, successor_state);
+                open_states.push_back(successor_state);
+            }
+        }
+    }
+    return state_graph;
 }
