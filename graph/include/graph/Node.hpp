@@ -1,12 +1,14 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include <boost/functional/hash.hpp>
+#include <graph/I_Printable.hpp>
 
-class Node
+class Node : public I_Printable
 {
 private:
     static constexpr double def_cost = 0.0;
@@ -19,6 +21,7 @@ public:
     ~Node() = default;
 
     bool operator==(const Node &rhs) const;
+    void print(std::ostream &os) const override;
 
     std::vector<std::string> get_subassembly() const;
     double get_cost() const;
