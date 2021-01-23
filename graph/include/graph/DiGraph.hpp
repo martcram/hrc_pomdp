@@ -9,7 +9,7 @@
 template <typename T>
 class DiGraph
 {
-private:
+protected:
     std::unordered_map<T, std::vector<T>> adjacency_list;
 
 public:
@@ -19,7 +19,7 @@ public:
     }
 
     explicit DiGraph(const std::vector<std::pair<T, T>> &edges)
-        : DiGraph()
+        : DiGraph<T>{}
     {
         this->add_edges(edges);
     }
