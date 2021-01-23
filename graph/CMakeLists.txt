@@ -10,3 +10,8 @@ add_library(
 )
 
 target_include_directories(graph PUBLIC "${HEADERS}")
+
+find_package(Boost REQUIRED)
+if(Boost_FOUND)
+    target_include_directories(graph PUBLIC ${BOOST_INCLUDE_DIRS})
+endif()
