@@ -21,6 +21,7 @@ public:
     ~Node() = default;
 
     bool operator==(const Node &rhs) const;
+    bool operator<(const Node &rhs) const;
     void print(std::ostream &os) const override;
 
     std::vector<std::string> get_subassembly() const;

@@ -17,6 +17,11 @@ bool Node::operator==(const Node &rhs) const
     return (this->subassembly == rhs.subassembly);
 }
 
+bool Node::operator<(const Node &rhs) const
+{
+    return (this->subassembly < rhs.subassembly);
+}
+
 void Node::print(std::ostream &os) const
 {
     // Keep track of the initial precision
