@@ -69,8 +69,8 @@ public:
     std::vector<T> get_nodes() const
     {
         std::vector<T> nodes{};
-        std::transform(adjacency_list.begin(), adjacency_list.end(), std::back_inserter(nodes),
-                       [](const auto &it) { return it.first; });
+        std::transform(node_indices.begin(), node_indices.end(), std::back_inserter(nodes),
+                       [](const auto &node_index_map) { return node_index_map.first; });
         return nodes;
     }
 
