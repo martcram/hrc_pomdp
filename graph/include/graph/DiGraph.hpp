@@ -74,13 +74,8 @@ public:
     std::vector<T> get_nodes() const
     {
         std::vector<T> nodes{};
-        for (auto i = adjacency_list.begin(); i != adjacency_list.end(); ++i)
-        {
-            nodes.push_back(i->first);
-            nodes.insert(nodes.end(), i->second.begin(), i->second.end());
-        }
-        std::sort(nodes.begin(), nodes.end());
-        nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
+        std::transform(node_indices.begin(), node_indices.end(), std::back_inserter(nodes),
+                       [](const auto &node_index_map) { return node_index_map.first; });
         return nodes;
     }
 
