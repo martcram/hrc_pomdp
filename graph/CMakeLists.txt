@@ -22,3 +22,18 @@ else ()
 endif ()
 
 #-----------------------------------------------------------------------------#
+
+# Find GraphViz
+find_package(Graphviz REQUIRED)
+if (NOT GRAPHVIZ_FOUND)
+    message(FATAL_ERROR "Graphviz not found.")
+else ()
+    target_include_directories(graph PUBLIC ${GRAPHVIZ_INCLUDE_DIRS})
+    target_link_libraries(graph PUBLIC  ${GRAPHVIZ_CDT_LIBRARY} 
+                                        ${GRAPHVIZ_GVC_LIBRARY} 
+                                        ${GRAPHVIZ_CGRAPH_LIBRARY} 
+                                        ${GRAPHVIZ_PATHPLAN_LIBRARY}
+    )
+endif ()
+
+#-----------------------------------------------------------------------------#
