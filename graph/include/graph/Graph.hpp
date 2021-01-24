@@ -11,6 +11,7 @@ class Graph
 {
 private:
     std::unordered_map<T, std::vector<T>> adjacency_list;
+    std::unordered_map<T, int> node_indices;
 
     void add_directed_edge(const T &u, const T &v)
     {
@@ -21,9 +22,15 @@ private:
             it->second.push_back(v);
     }
 
+    void add_node(const T &node)
+    {
+        if (node_indices.find(node) == node_indices.end())
+            node_indices.emplace(std::make_pair(node, node_indices.size()));
+    }
+
 public:
     Graph()
-        : adjacency_list{}
+        : adjacency_list{}, node_indices{}
     {
     }
 
@@ -39,6 +46,9 @@ public:
     {
         this->add_directed_edge(u, v);
         this->add_directed_edge(v, u);
+
+        this->add_node(u);
+        this->add_node(v);
     }
 
     void add_edges(const std::vector<std::pair<T, T>> &edges)
