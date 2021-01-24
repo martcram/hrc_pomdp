@@ -2,12 +2,15 @@
 #define DIGRAPH_HPP
 
 #include <algorithm>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include <graph/I_Plotable.hpp>
+
 template <typename T>
-class DiGraph
+class DiGraph : public I_Plotable
 {
 protected:
     std::unordered_map<T, std::vector<T>> adjacency_list;
@@ -88,6 +91,15 @@ public:
                 edges.emplace_back(i->first, *j);
         }
         return edges;
+    }
+
+    virtual std::stringstream plot() const override
+    {
+        std::stringstream ss{};
+        for (const auto &edge : this->get_edges())
+            ss << node_indices.at(edge.first) << "->" << node_indices.at(edge.second)
+               << '\n';
+        return ss;
     }
 };
 
