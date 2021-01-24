@@ -2,15 +2,19 @@
 #define DIGRAPH_HPP
 
 #include <algorithm>
+#include <iomanip>
+#include <ostream>
 #include <sstream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include <graph/I_Plotable.hpp>
+#include <graph/I_Printable.hpp>
 
 template <typename T>
-class DiGraph : public I_Plotable
+class DiGraph : public I_Plotable,
+                public I_Printable
 {
 protected:
     std::unordered_map<T, std::vector<T>> adjacency_list;
@@ -100,6 +104,21 @@ public:
             ss << node_indices.at(edge.first) << "->" << node_indices.at(edge.second)
                << '\n';
         return ss;
+    }
+
+    virtual void print(std::ostream &os) const override
+    {
+        for (auto it = adjacency_list.begin(); it != adjacency_list.end(); ++it)
+        {
+            os << it->first << '\n';
+
+            for (const auto &successor_state : it->second)
+            {
+                os << std::setw(10) << ' '
+                   << "--> " << successor_state << '\n';
+            }
+            os << '\n';
+        }
     }
 };
 

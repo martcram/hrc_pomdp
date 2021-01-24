@@ -5,8 +5,8 @@
 #include <vector>
 
 #include <graph/AndEdge.hpp>
+#include <graph/DiGraph.hpp>
 #include <graph/Node.hpp>
-#include <graph/StateGraph.hpp>
 
 class AndOrGraph
 {
@@ -36,7 +36,7 @@ public:
     std::vector<Node> get_root_nodes() const;
     std::vector<Node> get_leaf_nodes() const;
 
-    StateGraph convert_to_state_graph() const;
+    DiGraph<std::vector<Node>> convert_to_state_graph() const;
 };
 
 #endif // AND_OR_GRAPH_HPP

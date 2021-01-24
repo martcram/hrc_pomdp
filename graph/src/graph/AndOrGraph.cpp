@@ -4,8 +4,8 @@
 
 #include <graph/AndEdge.hpp>
 #include <graph/AndOrGraph.hpp>
+#include <graph/DiGraph.hpp>
 #include <graph/Node.hpp>
-#include <graph/StateGraph.hpp>
 
 AndOrGraph::AndOrGraph()
     : nodes{}, edges{}
@@ -121,9 +121,9 @@ std::vector<Node> AndOrGraph::get_leaf_nodes() const
     return leaf_nodes;
 }
 
-StateGraph AndOrGraph::convert_to_state_graph() const
+DiGraph<std::vector<Node>> AndOrGraph::convert_to_state_graph() const
 {
-    StateGraph state_graph{};
+    DiGraph<std::vector<Node>> state_graph{};
     std::vector<std::vector<Node>> open_states{this->get_root_nodes()};
 
     while (!open_states.empty())

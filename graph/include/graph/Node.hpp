@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <boost/functional/hash.hpp>
+
 #include <graph/I_Printable.hpp>
 
 class Node : public I_Printable
@@ -26,6 +27,8 @@ public:
 
     std::vector<std::string> get_subassembly() const;
     double get_cost() const;
+
+    friend std::ostream &operator<<(std::ostream &os, const std::vector<Node> &nodes);
 };
 
 // Custom specialization of std::hash injected in namespace std to deal with key types: Node, std::vector<Node>.

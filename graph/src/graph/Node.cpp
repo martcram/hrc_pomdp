@@ -47,3 +47,10 @@ double Node::get_cost() const
 {
     return cost;
 }
+
+std::ostream &operator<<(std::ostream &os, const std::vector<Node> &nodes)
+{
+    for (const auto &node : nodes)
+        os << node << ' ';
+    return os;
+}
