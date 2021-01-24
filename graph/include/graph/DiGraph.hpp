@@ -11,10 +11,17 @@ class DiGraph
 {
 protected:
     std::unordered_map<T, std::vector<T>> adjacency_list;
+    std::unordered_map<T, int> node_indices;
+
+    void add_node(const T &node)
+    {
+        if (node_indices.find(node) == node_indices.end())
+            node_indices.emplace(std::make_pair(node, node_indices.size()));
+    }
 
 public:
     DiGraph()
-        : adjacency_list{}
+        : adjacency_list{}, node_indices{}
     {
     }
 
@@ -33,6 +40,9 @@ public:
             adjacency_list.emplace(std::make_pair(u, std::vector<T>{v}));
         else if (std::find(it->second.begin(), it->second.end(), v) == it->second.end())
             it->second.push_back(v);
+
+        this->add_node(u);
+        this->add_node(v);
     }
 
     void add_edges(const std::vector<std::pair<T, T>> &edges)
