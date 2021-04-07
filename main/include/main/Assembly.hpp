@@ -17,15 +17,17 @@ private:
     Graph<std::string> connection_graph;
     AndOrGraph ao_graph;
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> blocking_rules;
+    std::unordered_map<std::string, std::vector<std::vector<std::string>>> technical_constraints;
 
     std::unordered_map<std::string, std::vector<std::vector<std::string>>> compute_blocking_rules() const;
+    bool check_tech_feasibility(const std::vector<std::string> &subassembly) const;
     bool check_geom_feasibility(const std::vector<std::string> &subassembly) const;
     bool validate_triplet(const std::vector<std::vector<std::string>> &triplet) const;
     std::vector<std::vector<std::vector<std::string>>> reversed_cutset() const;
     std::vector<std::string> get_neighbors(const std::vector<std::string> &subassembly) const;
 
 public:
-    explicit Assembly(const std::vector<DiGraph<std::string>> &obstr_graphs, const Graph<std::string> &connect_graph);
+    explicit Assembly(const std::vector<DiGraph<std::string>> &obstr_graphs, const Graph<std::string> &connect_graph, const std::unordered_map<std::string, std::vector<std::vector<std::string>>> &tech_constraints);
     ~Assembly() = default;  
 };
 

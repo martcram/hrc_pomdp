@@ -10,13 +10,13 @@
 #include <main/Assembly.hpp>
 
 #include <graph/AndOrGraph.hpp>
-#include <graph/Graph.hpp>
 #include <graph/DiGraph.hpp>
+#include <graph/Graph.hpp>
 
 #include <math_utils/math_utils.hpp>
 
-Assembly::Assembly(const std::vector<DiGraph<std::string>> &obstr_graphs, const Graph<std::string> &connect_graph)
-    : parts{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, ao_graph{}, blocking_rules{}
+Assembly::Assembly(const std::vector<DiGraph<std::string>> &obstr_graphs, const Graph<std::string> &connect_graph, const std::unordered_map<std::string, std::vector<std::vector<std::string>>> &tech_constraints)
+    : parts{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, technical_constraints{tech_constraints}, ao_graph{}, blocking_rules{}
 {
     parts = connection_graph.get_nodes();
     blocking_rules = this->compute_blocking_rules();
@@ -55,6 +55,22 @@ std::unordered_map<std::string, std::vector<std::vector<std::string>>> Assembly:
     }
 
     return blocking_rules;
+}
+
+bool Assembly::check_tech_feasibility(const std::vector<std::string> &subassembly) const
+{
+    for (auto it = technical_constraints.begin(); it != technical_constraints.end(); ++it)
+    {
+        for (auto rule : it->second)
+        {
+            // 'rule' needs to be sorted
+            std::sort(rule.begin(), rule.end());
+            bool is_subset = std::includes(subassembly.begin(), subassembly.end(), rule.begin(), rule.end());
+            if (is_subset && (std::find(subassembly.begin(), subassembly.end(), it->first) == subassembly.end()))
+                return false;
+        }
+    }
+    return true;
 }
 
 bool Assembly::check_geom_feasibility(const std::vector<std::string> &subassembly) const
@@ -108,7 +124,7 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
     std::copy_if(connections.begin(), connections.end(), std::back_inserter(two_parts_asms),
                  [this](std::vector<std::string> &edge) {
                      std::sort(edge.begin(), edge.end());
-                     return this->check_geom_feasibility(edge);
+                     return (this->check_geom_feasibility(edge) && this->check_tech_feasibility(edge));
                  });
     subasm_length_map.insert({2, two_parts_asms});
 
@@ -127,7 +143,7 @@ std::vector<std::vector<std::vector<std::string>>> Assembly::reversed_cutset() c
                          [this, &subassemblies](auto &subassembly) {
                              std::sort(subassembly.begin(), subassembly.end());
                              return ((std::find(subassemblies.begin(), subassemblies.end(), subassembly) == subassemblies.end()) &&
-                                     this->check_geom_feasibility(subassembly));
+                                     this->check_geom_feasibility(subassembly) && this->check_tech_feasibility(subassembly));
                          });
         }
         subasm_length_map.insert({subasm_length, subassemblies});
