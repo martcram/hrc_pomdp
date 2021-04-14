@@ -36,3 +36,6 @@
 
 # CMake
 build/*
+
+# Doxygen
+docs/*

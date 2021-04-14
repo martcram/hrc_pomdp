@@ -1,8 +1,8 @@
 #ifndef MATH_UTILS_HPP
 #define MATH_UTILS_HPP
 
-#include <algorithm>
-#include <utility>
+#include <algorithm> // std::any_of
+#include <utility>   // std::pair
 #include <vector>
 
 namespace math_utils
@@ -10,7 +10,7 @@ namespace math_utils
     template <typename T>
     std::vector<std::pair<T, T>> cartesian_product(const std::vector<T> &r1, const std::vector<T> &r2)
     {
-        // If either of the two sets is empty; the Cartesian product of those two sets if also empty
+        // If either of the two vectors is empty, the Cartesian product of those two vectors if also empty.
         if (r1.empty() || r2.empty())
             return std::vector<std::pair<T, T>>{};
 
@@ -28,7 +28,7 @@ namespace math_utils
     template <typename T>
     std::vector<std::vector<T>> cartesian_product(const std::vector<std::vector<T>> &r1, const std::vector<T> &r2)
     {
-        // If either of the sets is empty; the Cartesian product of those sets is also empty
+        // If either of the sets is empty, the Cartesian product of those sets is also empty.
         if (r1.empty() || std::any_of(r1.begin(), r1.end(), [](const auto &item) { return item.empty(); }) || r2.empty())
             return std::vector<std::vector<T>>{};
 
@@ -45,11 +45,10 @@ namespace math_utils
         return product;
     }
 
-    // Along the lines of Anumi (2016): https://stackoverflow.com/questions/5279051
     template <typename T>
     std::vector<std::vector<T>> cartesian_product(const std::vector<std::vector<T>> &v)
     {
-        // If either of the sets is empty; the Cartesian product of those sets is also empty
+        // If either of the vectors is empty, the Cartesian product of those vectors is also empty
         if (std::any_of(v.begin(), v.end(), [](const std::vector<T> &u) { return u.empty(); }))
             return std::vector<std::vector<T>>{};
 

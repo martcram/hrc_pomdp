@@ -2,7 +2,6 @@
 #define PLOTTER_HPP
 
 #include <memory>
-#include <sstream>
 #include <string>
 
 #include <graph/I_Plotable.hpp>

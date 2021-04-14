@@ -1,15 +1,16 @@
-#include <algorithm>
+#include <algorithm> // std::find
 #include <vector>
 
-#include <graph/AndEdge.hpp>
 #include <graph/Node.hpp>
 
-AndEdge::AndEdge(const Node &parent_node, const std::vector<Node> &child_nodes, double cost)
+template <typename T>
+AndEdge<T>::AndEdge(const Node<T> &parent_node, const std::vector<Node<T>> &child_nodes, double cost)
     : parent_node{parent_node}, child_nodes{child_nodes}, cost{cost}
 {
 }
 
-bool AndEdge::operator==(const AndEdge &rhs) const
+template <typename T>
+bool AndEdge<T>::operator==(const AndEdge &rhs) const
 {
     for (const auto &node : this->child_nodes)
     {
@@ -21,12 +22,14 @@ bool AndEdge::operator==(const AndEdge &rhs) const
     return (this->parent_node == rhs.parent_node);
 }
 
-Node AndEdge::get_parent_node() const
+template <typename T>
+Node<T> AndEdge<T>::get_parent_node() const
 {
     return parent_node;
 }
 
-std::vector<Node> AndEdge::get_child_nodes() const
+template <typename T>
+std::vector<Node<T>> AndEdge<T>::get_child_nodes() const
 {
     return child_nodes;
 }

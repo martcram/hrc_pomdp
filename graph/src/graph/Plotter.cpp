@@ -1,7 +1,8 @@
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include <sstream>
+#include <cstdio>   // std::FILE, std::fopen
+#include <fstream>  // std::ofstream
+#include <ios>      // std::ios_base
+#include <iostream> // std::cerr
+#include <memory>   // std::shared_ptr
 #include <string>
 #include <vector>
 
