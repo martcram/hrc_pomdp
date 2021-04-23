@@ -1,47 +1,59 @@
 #ifndef AND_OR_GRAPH_HPP
 #define AND_OR_GRAPH_HPP
 
-#include <unordered_map>
-#include <utility> // std::pair
-#include <vector>
-
-#include <graph/AndEdge.hpp>
-#include <graph/Node.hpp>
+#include <unordered_map> // std::unordered_map
+#include <utility>       // std::pair
+#include <vector>        // std::vector
 
 template <typename T>
 class AndOrGraph
 {
 private:
-    std::vector<Node<T>> nodes;
-    std::vector<AndEdge<T>> edges;
+    struct Node
+    {
+        T data;
 
-    std::unordered_map<Node<T>, std::vector<AndEdge<T>>> incoming_edges{};
-    std::unordered_map<Node<T>, std::vector<AndEdge<T>>> outgoing_edges{};
+        explicit Node(const T &data);
+        ~Node() = default;
 
-    void _add_node(const Node<T> &node);
-    void _add_nodes_from(const std::vector<Node<T>> &nodes);
-    void _add_edge(const AndEdge<T> &edge);
+        bool operator==(const Node &rhs) const;
+        bool operator<(const Node &rhs) const;
+    };
 
-    Node<T> _get_node(const T &data) const;
-    std::vector<AndEdge<T>> _get_incoming_edges(const Node<T> &node) const;
-    std::vector<AndEdge<T>> _get_outgoing_edges(const Node<T> &node) const;
-    std::vector<std::vector<Node<T>>> _get_successors(const Node<T> &node) const;
-    std::vector<Node<T>> _get_root_nodes() const;
-    std::vector<Node<T>> _get_leaf_nodes() const;
+    struct AndEdge
+    {
+        std::vector<Node> child_nodes;
+
+        explicit AndEdge(const std::vector<Node> &child_nodes);
+        ~AndEdge() = default;
+
+        bool operator==(const AndEdge &rhs) const;
+        bool operator<(const AndEdge &rhs) const;
+    };
+
+    std::unordered_map<int, std::vector<AndEdge>> adjacency_list;
+    std::unordered_map<int, Node> node_ids;
+
+    bool get_id(const Node &node, int &out) const;
+
+    void add_node(const Node &node, int &out_id);
 
 public:
     AndOrGraph();
     explicit AndOrGraph(const std::vector<std::pair<T, std::vector<T>>> &edges);
     ~AndOrGraph() = default;
 
-    void add_edge(const T &parent_node, const std::vector<T> &child_nodes);
-    void add_edges_from(const std::vector<std::pair<T, std::vector<T>>> &edges);
-
     std::vector<T> get_nodes() const;
     std::vector<std::pair<T, std::vector<T>>> get_edges() const;
+
     std::vector<std::vector<T>> get_successors(const T &data) const;
+    std::vector<T> get_predecessors(const T &data) const;
+
     std::vector<T> get_root_nodes() const;
     std::vector<T> get_leaf_nodes() const;
+
+    void add_edge(const T &parent_data, const std::vector<T> &child_data);
+    void add_edges(const std::vector<std::pair<T, std::vector<T>>> &edges);
 };
 
 #include <graph/AndOrGraph.tpp>
