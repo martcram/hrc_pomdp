@@ -1,10 +1,10 @@
-#include <algorithm> // std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
-#include <cmath>     // std::ceil
-#include <iterator>  // std::back_inserter
-#include <map>
-#include <unordered_map>
-#include <utility>   // std::pair
-#include <vector>
+#include <algorithm>     // std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
+#include <cmath>         // std::ceil
+#include <iterator>      // std::back_inserter
+#include <map>           // std::map
+#include <unordered_map> // std::unordered_map
+#include <utility>       // std::pair
+#include <vector>        // std::vector
 
 #include <graph/AndOrGraph.hpp>
 #include <graph/DiGraph.hpp>
@@ -13,17 +13,23 @@
 #include <main/Assembly.hpp>
 #include <main/Component.hpp>
 
-#include <math_utils/math_utils.hpp>
+#include <utils/utils.hpp> // utils::cartesian_product
+
+using Subassembly = std::vector<Component>;
+
+Assembly::Assembly()
+    : components{}, obstruction_graphs{}, connection_graph{}, ao_graph{},
+      blocking_rules{}, technical_constraints{}
+{
+}
 
 Assembly::Assembly(const std::vector<DiGraph<Component>> &obstr_graphs, const Graph<Component> &connect_graph, const std::unordered_map<Component, std::vector<Subassembly>> &tech_constraints)
-    : components{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, technical_constraints{tech_constraints}, ao_graph{}, blocking_rules{}
+    : components{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, ao_graph{},
+      blocking_rules{}, technical_constraints{tech_constraints}
 {
     components = connection_graph.get_nodes();
     blocking_rules = this->compute_blocking_rules();
-
     ao_graph = this->generate_ao_graph();
-    state_graph = this->generate_state_graph();
-    intention_graph = this->generate_intention_graph();
 }
 
 std::unordered_map<Component, std::vector<Subassembly>> Assembly::compute_blocking_rules() const
@@ -45,7 +51,7 @@ std::unordered_map<Component, std::vector<Subassembly>> Assembly::compute_blocki
     std::unordered_map<Component, std::vector<Subassembly>> blocking_rules{};
     for (const auto &component : components)
     {
-        std::vector<Subassembly> subassemblies{math_utils::cartesian_product(blocking_parts.at(component))};
+        std::vector<Subassembly> subassemblies{utils::cartesian_product(blocking_parts.at(component))};
         for (auto &subassembly : subassemblies)
         {
             std::sort(subassembly.begin(), subassembly.end());
@@ -156,7 +162,7 @@ AndOrGraph<Subassembly> Assembly::generate_ao_graph() const
         {
             std::vector<Component> subasm_neighbors{this->get_neighbors(subassembly)};
             std::vector<Subassembly> subassemblies_temp{
-                math_utils::cartesian_product(std::vector<Subassembly>{subassembly}, subasm_neighbors)};
+                utils::cartesian_product(std::vector<Subassembly>{subassembly}, subasm_neighbors)};
             std::copy_if(subassemblies_temp.begin(), subassemblies_temp.end(), std::back_inserter(subassemblies),
                          [this, &subassemblies](auto &subassembly) {
                              std::sort(subassembly.begin(), subassembly.end());
@@ -178,7 +184,7 @@ AndOrGraph<Subassembly> Assembly::generate_ao_graph() const
         {
             size_t triplet2_len{triplet3_len - triplet1_len};
             std::vector<std::vector<Subassembly>> triplets{
-                math_utils::cartesian_product(std::vector<std::vector<Subassembly>>{subasm_length_map.at(triplet1_len),
+                utils::cartesian_product(std::vector<std::vector<Subassembly>>{subasm_length_map.at(triplet1_len),
                                                                                     subasm_length_map.at(triplet2_len),
                                                                                     subasm_length_map.at(triplet3_len)})};
             std::copy_if(triplets.begin(), triplets.end(), std::back_inserter(cutsets),
@@ -208,60 +214,7 @@ AndOrGraph<Subassembly> Assembly::generate_ao_graph() const
     return ao_graph;
 }
 
-DiGraph<State> Assembly::generate_state_graph() const
+AndOrGraph<Subassembly> Assembly::get_ao_graph() const
 {
-    DiGraph<State> state_graph{};
-    std::vector<State> open_states{};
-
-    std::vector<Subassembly> root_subasms{this->ao_graph.get_root_nodes()};
-    std::transform(root_subasms.begin(), root_subasms.end(), std::back_inserter(open_states),
-                   [](const Subassembly &root_subasm) { return State{root_subasm}; });
-
-    while (!open_states.empty())
-    {
-        State open_state{open_states.back()};
-        open_states.pop_back();
-
-        for (const Subassembly &subasm : open_state)
-        {
-            for (const std::vector<Subassembly> &successor_subasms : this->ao_graph.get_successors(subasm))
-            {
-                State successor_state{open_state};
-                successor_state.erase(std::find(successor_state.begin(), successor_state.end(), subasm));
-
-                successor_state.insert(successor_state.end(), successor_subasms.begin(), successor_subasms.end());
-                std::sort(successor_state.begin(), successor_state.end());
-
-                state_graph.add_edge(open_state, successor_state);
-                open_states.push_back(successor_state);
-            }
-        }
-    }
-    return state_graph;
-}
-
-DiGraph<Intention> Assembly::generate_intention_graph() const
-{
-    DiGraph<Intention> intention_graph{};
-    std::vector<Intention> open_intentions{};
-
-    std::vector<State> root_states{this->state_graph.get_root_nodes()};
-    std::transform(root_states.begin(), root_states.end(), std::back_inserter(open_intentions),
-                   [](const State &root_state) { return Intention{root_state}; });
-
-    while (!open_intentions.empty())
-    {
-        Intention open_intention{open_intentions.back()};
-        open_intentions.pop_back();
-
-        for (const State &successor_state : this->state_graph.get_successors(open_intention.back()))
-        {
-            Intention successor_intention{open_intention};
-            successor_intention.push_back(successor_state);
-
-            intention_graph.add_edge(open_intention, successor_intention);
-            open_intentions.push_back(successor_intention);
-        }
-    }
-    return intention_graph;
+    return this->ao_graph;
 }
