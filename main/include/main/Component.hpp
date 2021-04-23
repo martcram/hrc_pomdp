@@ -2,8 +2,8 @@
 #define COMPONENT_HPP
 
 #include <algorithm> // std::for_each
-#include <string>
-#include <vector>
+#include <string>    // std::string
+#include <vector>    // std::vector
 
 #include <boost/functional/hash.hpp>
 
@@ -11,17 +11,15 @@ class Component
 {
 private:
     std::string name;
-    int id;
 
 public:
-    static int s_id;
-
     Component(const std::string &name);
     ~Component() = default;
 
+    std::string get_name() const;
+
     bool operator==(const Component &rhs) const;
     bool operator<(const Component &rhs) const;
-    std::string get_name() const;
 };
 
 // Custom specialization of std::hash injected in namespace std to deal with key types: Component, std::vector<Component>, std::vector<std::vector<Component>>, std::vector<std::vector<std::vector<Component>>>.

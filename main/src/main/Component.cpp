@@ -1,11 +1,9 @@
-#include <string>
+#include <string> // std::string
 
 #include <main/Component.hpp>
 
-int Component::s_id{0};
-
 Component::Component(const std::string &name)
-    : name{name}, id{s_id++}
+    : name{name}
 {
 }
 
@@ -21,5 +19,5 @@ bool Component::operator<(const Component &rhs) const
 
 std::string Component::get_name() const
 {
-    return name;
+    return this->name;
 }
