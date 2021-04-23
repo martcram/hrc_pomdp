@@ -10,4 +10,4 @@ add_library(
 )
 
 target_include_directories(main PUBLIC "${HEADERS}")
-target_link_libraries(main PUBLIC graph math_utils)
+target_link_libraries(main PUBLIC graph utils)

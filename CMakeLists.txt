@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.1.0)
 project(hrc_pomdp VERSION 0.1.0)
 
 set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set (CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(graph)
 add_subdirectory(main)
-add_subdirectory(math_utils)
+add_subdirectory(utils)
 add_subdirectory(pomdp)
 
 add_executable(
@@ -13,4 +14,4 @@ add_executable(
     main.cpp
 )
 
-target_link_libraries(hrc_pomdp PUBLIC graph main math_utils pomdp)
+target_link_libraries(hrc_pomdp PUBLIC graph main utils pomdp)
