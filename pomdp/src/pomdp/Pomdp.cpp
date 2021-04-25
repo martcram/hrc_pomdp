@@ -6,7 +6,7 @@
 #include <deque>         // std::deque
 #include <filesystem>    // std::filesystem::current_path
 #include <ios>           // std::streamsize
-#include <iostream>      // std::cin, std::cout, std::endl
+#include <iostream>      // std::cerr, std::cin, std::cout, std::endl
 #include <iterator>      // std::back_inserter, std::ostream_iterator
 #include <limits>        // std::numeric_limits
 #include <sstream>       // std::istringstream, std::ostringstream
@@ -632,7 +632,7 @@ void Pomdp::import_pomdpx(const std::string &file_path)
     if (this->_exist_file(file_path))
         this->pomdpx_file_path = file_path;
     else
-        std::cout << "[Import Pomdpx]: Pomdpx file doesn't exist: " << file_path
+        std::cerr << "[Import Pomdpx]: Pomdpx file doesn't exist: " << file_path
                   << std::endl;
 }
 
@@ -667,15 +667,15 @@ void Pomdp::import_policy(const std::string &file_path)
                 this->policy_file_path = file_path;
             }
             else
-                std::cout << "[Import Policy]: File is probably empty: " << file_path
+                std::cerr << "[Import Policy]: File is probably empty: " << file_path
                           << std::endl;
         }
         else
-            std::cout << "[Import Policy]: TinyXML2 cannot load policy file: " << file_path
+            std::cerr << "[Import Policy]: TinyXML2 cannot load policy file: " << file_path
                       << std::endl;
     }
     else
-        std::cout << "[Import Policy]: Policy file doesn't exist: " << file_path
+        std::cerr << "[Import Policy]: Policy file doesn't exist: " << file_path
                   << std::endl;
 }
 
@@ -705,7 +705,7 @@ Action Pomdp::get_optimal_action(const std::vector<double> &belief) const
         optimal_action = this->action_ids.at(it->first);
     }
     else
-        std::cout << "[Action selection]: No policy available!"
+        std::cerr << "[Action selection]: No policy available!"
                   << std::endl;
 
     return optimal_action;
