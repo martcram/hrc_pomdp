@@ -1,4 +1,5 @@
 #include <algorithm> // std::transform
+#include <iostream>  // std::cerr
 #include <numeric>   // std::accumulate
 #include <vector>    // std::vector
 
@@ -10,6 +11,10 @@ BayesFilter::BayesFilter(const std::vector<std::vector<std::vector<double>>> &st
     : num_states{}, num_controls{}, num_measurements{}, current_belief{init_belief},
       state_transition_cpt{state_transition_cpt}, measurement_cpt{measurement_cpt}, init_belief{init_belief}
 {
+    if (this->state_transition_cpt.empty() || this->measurement_cpt.empty() || this->init_belief.empty())
+        std::cerr << "[BayesFilter] One or more model parameters are empty"
+                  << std::endl;
+
     this->num_states = this->state_transition_cpt.size();
     this->num_controls = this->state_transition_cpt.at(0).size();
     this->num_measurements = this->measurement_cpt.at(0).at(0).size();
