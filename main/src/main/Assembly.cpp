@@ -185,8 +185,8 @@ AndOrGraph<Subassembly> Assembly::generate_ao_graph() const
             size_t triplet2_len{triplet3_len - triplet1_len};
             std::vector<std::vector<Subassembly>> triplets{
                 utils::cartesian_product(std::vector<std::vector<Subassembly>>{subasm_length_map.at(triplet1_len),
-                                                                                    subasm_length_map.at(triplet2_len),
-                                                                                    subasm_length_map.at(triplet3_len)})};
+                                                                               subasm_length_map.at(triplet2_len),
+                                                                               subasm_length_map.at(triplet3_len)})};
             std::copy_if(triplets.begin(), triplets.end(), std::back_inserter(cutsets),
                          [this](auto &triplet) {
                              std::sort(triplet.at(0).begin(), triplet.at(0).end());
@@ -212,6 +212,11 @@ AndOrGraph<Subassembly> Assembly::generate_ao_graph() const
         ao_graph.add_edge(cutset.at(2), std::vector<Subassembly>{cutset.at(0), cutset.at(1)});
 
     return ao_graph;
+}
+
+std::vector<Component> Assembly::get_components() const
+{
+    return this->components;
 }
 
 AndOrGraph<Subassembly> Assembly::get_ao_graph() const

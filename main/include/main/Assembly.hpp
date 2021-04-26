@@ -35,6 +35,7 @@ public:
     explicit Assembly(const std::vector<DiGraph<Component>> &obstr_graphs, const Graph<Component> &connect_graph, const std::unordered_map<Component, std::vector<Subassembly>> &tech_constraints);
     ~Assembly() = default;
 
+    std::vector<Component> get_components() const;
     AndOrGraph<Subassembly> get_ao_graph() const;
 };
 
