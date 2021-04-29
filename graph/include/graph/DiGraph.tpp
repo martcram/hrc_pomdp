@@ -1,18 +1,27 @@
 #include <algorithm>     // std::copy_if, std::find, std::find_if, std::for_each, std::transform
 #include <iterator>      // std::back_inserter
+#include <map>           // std::map
+#include <memory>        // std::make_shared, std::shared_ptr
+#include <sstream>       // std::stringstream
+#include <string>        // std::string
 #include <unordered_map> // std::unordered_map
 #include <utility>       // std::make_pair, std::pair
 #include <vector>        // std::vector
 
+#include <plot/I_Plotable.hpp>
+#include <plot/Plotter.hpp>
+
+#include <utils/utils.hpp> // utils::to_snake_case
+
 template <typename N, typename E>
-DiGraph<N, E>::DiGraph()
-    : adjacency_list{}, node_ids{}, edge_ids{}, edge_attrs{}, nodes{}
+DiGraph<N, E>::DiGraph(const std::string &name)
+    : name{name}, adjacency_list{}, node_ids{}, edge_ids{}, edge_attrs{}, nodes{}
 {
 }
 
 template <typename N, typename E>
-DiGraph<N, E>::DiGraph(const std::vector<std::pair<N, N>> &edges)
-    : DiGraph<N, E>()
+DiGraph<N, E>::DiGraph(const std::vector<std::pair<N, N>> &edges, const std::string &name)
+    : DiGraph<N, E>(name)
 {
     this->add_edges(edges);
 }
@@ -53,6 +62,26 @@ bool DiGraph<N, E>::get_id(const std::pair<N, N> &edge, int &out) const
     else
     {
         out = this->edge_ids.size();
+        return false;
+    }
+}
+
+template <typename N, typename E>
+bool DiGraph<N, E>::get_id(const E &edge_attr, int &out) const
+{
+    auto it = std::find_if(this->edge_attr_ids.begin(), this->edge_attr_ids.end(),
+                           [&edge_attr](const auto &e) {
+                               return (e.second == edge_attr);
+                           });
+
+    if (it != edge_attr_ids.end())
+    {
+        out = it->first;
+        return true;
+    }
+    else
+    {
+        out = this->edge_attr_ids.size();
         return false;
     }
 }
@@ -178,6 +207,10 @@ void DiGraph<N, E>::add_edge(const N &u, const N &v, const E &edge_attr)
         {
             this->edge_ids.emplace(std::make_pair(edge_id, edge));
             this->edge_attrs.emplace(std::make_pair(edge_id, edge_attr));
+
+            int edge_attr_id{};
+            if (!this->get_id(edge_attr, edge_attr_id))
+                this->edge_attr_ids.emplace(std::make_pair(edge_attr_id, edge_attr));
         }
     }
 }
@@ -202,4 +235,76 @@ DiGraph<N, E> DiGraph<N, E>::reverse() const
                   });
 
     return reversed_graph;
+}
+
+template <typename N, typename E>
+std::string DiGraph<N, E>::get_name() const
+{
+    return this->name;
+}
+
+template <typename N, typename E>
+void DiGraph<N, E>::set_name(const std::string &name)
+{
+    this->name = name;
+}
+
+template <typename N, typename E>
+std::stringstream DiGraph<N, E>::generate_dot() const
+{
+    std::stringstream ss_dot{};
+
+    ss_dot << "/*"
+           << "\n=== NODES ===";
+    std::map<int, N> sorted_node_ids(node_ids.begin(), node_ids.end());
+    std::for_each(sorted_node_ids.begin(), sorted_node_ids.end(),
+                  [&ss_dot](const std::pair<int, N> &p) {
+                      ss_dot << '\n'
+                             << p.first << ":\n"
+                             << p.second << '\n';
+                  });
+
+    if (this->edge_attr_ids.size() > 1)
+    {
+        ss_dot << "\n=== EDGES ===";
+        std::map<int, E> sorted_edge_attr_ids(edge_attr_ids.begin(), edge_attr_ids.end());
+        std::for_each(sorted_edge_attr_ids.begin(), sorted_edge_attr_ids.end(),
+                      [&ss_dot](const std::pair<int, E> &p) {
+                          ss_dot << '\n'
+                                 << p.first << ":\n"
+                                 << p.second << '\n';
+                      });
+    }
+    ss_dot << "*/\n";
+
+    ss_dot << '\n'
+           << "digraph " << utils::to_snake_case(this->get_name())
+           << "{\n";
+    for (const std::pair<int, std::pair<N, N>> &p : this->edge_ids)
+    {
+        int u_id{};
+        int v_id{};
+        int edge_attr_id{};
+
+        this->get_id(p.second.first, u_id);
+        this->get_id(p.second.second, v_id);
+        this->get_id(this->edge_attrs.at(p.first), edge_attr_id);
+
+        ss_dot << u_id << " -> " << v_id;
+        if (this->edge_attr_ids.size() > 1)
+            ss_dot << " [label = " << edge_attr_id << "]";
+        ss_dot << '\n';
+    }
+    ss_dot << "}\n";
+
+    return ss_dot;
+}
+
+template <typename N, typename E>
+void DiGraph<N, E>::plot(const std::string &output_loc) const
+{
+    std::shared_ptr<I_Plotable> digraph_ptr = std::make_shared<DiGraph<N, E>>(*this);
+    Plotter plotter{digraph_ptr, output_loc};
+    plotter.generate_dot();
+    plotter.render_dot();
 }
