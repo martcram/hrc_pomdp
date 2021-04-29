@@ -1,7 +1,8 @@
 #ifndef ACTION_HPP
 #define ACTION_HPP
 
-#include <vector> // std::vector
+#include <ostream> // std::ostream
+#include <vector>  // std::vector
 
 #include <main/Component.hpp>
 
@@ -23,6 +24,8 @@ public:
 
     bool operator==(const Action &rhs) const;
     bool operator<(const Action &rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Action &action);
 };
 
 #endif // ACTION_HPP
