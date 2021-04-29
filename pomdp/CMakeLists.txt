@@ -10,7 +10,7 @@ add_library(
 )
 
 target_include_directories(pomdp PUBLIC "${HEADERS}")
-target_link_libraries(pomdp PUBLIC main utils)
+target_link_libraries(pomdp PUBLIC graph main utils)
 
 #-----------------------------------------------------------------------------#
 

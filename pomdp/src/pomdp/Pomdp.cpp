@@ -94,7 +94,10 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
                  });
 
     this->state_graph = this->_generate_state_graph();
+    this->state_graph.set_name(this->file_name + "_state_graph");
+
     this->intention_graph = this->_generate_intention_graph();
+    this->intention_graph.set_name(this->file_name + "_intention_graph");
 
     // INTENTIONS
     std::vector<Intention> ig_nodes{this->intention_graph.get_nodes()};
@@ -336,9 +339,9 @@ void Pomdp::_init_reward_func()
     }
 }
 
-DiGraph<State> Pomdp::_generate_state_graph() const
+DiGraph<State, Action> Pomdp::_generate_state_graph() const
 {
-    DiGraph<State> state_graph{};
+    DiGraph<State, Action> state_graph{};
     std::deque<State> open_states{};
 
     std::vector<Subassembly> root_subasms{this->assembly.get_ao_graph().get_root_nodes()};
@@ -360,10 +363,8 @@ DiGraph<State> Pomdp::_generate_state_graph() const
                 successor_state.insert(successor_state.end(), successor_subasms.begin(), successor_subasms.end());
                 std::sort(successor_state.begin(), successor_state.end());
 
-                int action_id{};
-                this->_get_id(Action{successor_subasms, subasm}, action_id);
-
-                state_graph.add_edge(successor_state, open_state, action_id);
+                Action action{successor_subasms, subasm};
+                state_graph.add_edge(successor_state, open_state, action);
                 open_states.push_back(successor_state);
             }
         }
@@ -371,11 +372,11 @@ DiGraph<State> Pomdp::_generate_state_graph() const
     return state_graph;
 }
 
-DiGraph<Intention> Pomdp::_generate_intention_graph() const
+DiGraph<Intention, Action> Pomdp::_generate_intention_graph() const
 {
-    DiGraph<State> state_graph{this->state_graph.reverse()};
+    DiGraph<State, Action> state_graph{this->state_graph.reverse()};
 
-    DiGraph<Intention> intention_graph{};
+    DiGraph<Intention, Action> intention_graph{};
     std::deque<Intention> open_intentions{};
 
     std::vector<State> root_states{state_graph.get_root_nodes()};
@@ -393,8 +394,8 @@ DiGraph<Intention> Pomdp::_generate_intention_graph() const
             Intention successor_intention{open_intention};
             successor_intention.push_back(successor_state);
 
-            int action_id{state_graph.get_edge_attr(std::make_pair(open_state, successor_state))};
-            intention_graph.add_edge(successor_intention, open_intention, action_id);
+            Action action{state_graph.get_edge_attr(std::make_pair(open_state, successor_state))};
+            intention_graph.add_edge(successor_intention, open_intention, action);
             open_intentions.push_back(successor_intention);
         }
     }
@@ -415,8 +416,8 @@ std::vector<Intention> Pomdp::_get_state_trans(const Intention &current_intentio
         {
             std::vector<Intention> successors{this->intention_graph.get_successors(current_intention)};
             std::copy_if(successors.begin(), successors.end(), std::back_inserter(interm_intentions),
-                         [this, &action_id, &current_intention](const Intention &successor) {
-                             return (this->intention_graph.get_edge_attr(std::make_pair(current_intention, successor)) == action_id);
+                         [this, &action, &current_intention](const Intention &successor) {
+                             return (this->intention_graph.get_edge_attr(std::make_pair(current_intention, successor)) == action);
                          });
         }
 
@@ -444,8 +445,8 @@ std::vector<Action> Pomdp::_get_actions(const Intention &intention) const
 
     for (const Intention &successor : this->intention_graph.get_successors(intention))
     {
-        int action_id{this->intention_graph.get_edge_attr(std::make_pair(intention, successor))};
-        actions.push_back(this->action_ids.at(action_id));
+        Action action{this->intention_graph.get_edge_attr(std::make_pair(intention, successor))};
+        actions.push_back(action);
     }
 
     return actions;
@@ -457,8 +458,8 @@ std::vector<Action> Pomdp::_get_prev_actions(const Intention &intention) const
 
     for (const Intention &predecessor : this->intention_graph.get_predecessors(intention))
     {
-        int action_id{this->intention_graph.get_edge_attr(std::make_pair(predecessor, intention))};
-        prev_actions.push_back(this->action_ids.at(action_id));
+        Action action{this->intention_graph.get_edge_attr(std::make_pair(predecessor, intention))};
+        prev_actions.push_back(action);
     }
 
     return prev_actions;
@@ -506,6 +507,16 @@ std::vector<Observation> Pomdp::get_observations() const
     std::transform(this->observation_ids.begin(), this->observation_ids.end(), std::back_inserter(observations),
                    [](const auto &observation_id) { return observation_id.second; });
     return observations;
+}
+
+DiGraph<State, Action> Pomdp::get_state_graph() const
+{
+    return this->state_graph;
+}
+
+DiGraph<Intention, Action> Pomdp::get_intention_graph() const
+{
+    return this->intention_graph;
 }
 
 std::vector<double> Pomdp::get_init_belief() const
