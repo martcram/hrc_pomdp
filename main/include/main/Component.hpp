@@ -2,6 +2,7 @@
 #define COMPONENT_HPP
 
 #include <algorithm> // std::for_each
+#include <ostream>   // std::ostream
 #include <string>    // std::string
 #include <vector>    // std::vector
 
@@ -20,6 +21,11 @@ public:
 
     bool operator==(const Component &rhs) const;
     bool operator<(const Component &rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Component &component);
+    friend std::ostream &operator<<(std::ostream &os, const std::vector<Component> &v_component);
+    friend std::ostream &operator<<(std::ostream &os, const std::vector<std::vector<Component>> &vv_component);
+    friend std::ostream &operator<<(std::ostream &os, const std::vector<std::vector<std::vector<Component>>> &vvv_component);
 };
 
 // Custom specialization of std::hash injected in namespace std to deal with key types: Component, std::vector<Component>, std::vector<std::vector<Component>>, std::vector<std::vector<std::vector<Component>>>.
