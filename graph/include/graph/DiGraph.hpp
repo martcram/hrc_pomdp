@@ -1,11 +1,11 @@
 #ifndef DIGRAPH_HPP
 #define DIGRAPH_HPP
 
-#include <sstream>       // std::stringstream
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <utility>       // std::pair
-#include <vector>        // std::vector
+#include <sstream> // std::stringstream
+#include <string>  // std::string
+#include <map>     // std::map
+#include <utility> // std::pair
+#include <vector>  // std::vector
 
 #include <plot/I_Plotable.hpp>
 
@@ -16,11 +16,11 @@ private:
     static constexpr char def_name[] = "directional_graph";
     std::string name;
 
-    std::unordered_map<int, std::vector<int>> adjacency_list;
-    std::unordered_map<int, N> node_ids;
-    std::unordered_map<int, std::pair<N, N>> edge_ids;
-    std::unordered_map<int, E> edge_attrs;
-    std::unordered_map<int, E> edge_attr_ids;
+    std::map<int, std::vector<int>> adjacency_list;
+    std::map<int, N> node_ids;
+    std::map<int, std::pair<N, N>> edge_ids;
+    std::map<int, E> edge_attrs;
+    std::map<int, E> edge_attr_ids;
 
     std::vector<N> nodes;
 
@@ -45,6 +45,7 @@ public:
     std::vector<N> get_leaf_nodes() const;
 
     E get_edge_attr(const std::pair<N, N> &edge) const;
+    std::vector<E> get_edge_attrs() const;
 
     void add_edge(const N &u, const N &v, const E &edge_attr = E{});
     void add_edges(const std::vector<std::pair<N, N>> &edges);

@@ -1,12 +1,11 @@
-#include <algorithm>     // std::copy_if, std::find, std::find_if, std::for_each, std::transform
-#include <iterator>      // std::back_inserter
-#include <map>           // std::map
-#include <memory>        // std::make_shared, std::shared_ptr
-#include <sstream>       // std::stringstream
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <utility>       // std::make_pair, std::pair
-#include <vector>        // std::vector
+#include <algorithm> // std::copy_if, std::find, std::find_if, std::for_each, std::transform
+#include <iterator>  // std::back_inserter
+#include <map>       // std::map
+#include <memory>    // std::make_shared, std::shared_ptr
+#include <sstream>   // std::stringstream
+#include <string>    // std::string
+#include <utility>   // std::make_pair, std::pair
+#include <vector>    // std::vector
 
 #include <plot/I_Plotable.hpp>
 #include <plot/Plotter.hpp>
@@ -188,6 +187,15 @@ E DiGraph<N, E>::get_edge_attr(const std::pair<N, N> &edge) const
 }
 
 template <typename N, typename E>
+std::vector<E> DiGraph<N, E>::get_edge_attrs() const
+{
+    std::vector<E> edge_attrs{};
+    std::transform(this->edge_attr_ids.begin(), this->edge_attr_ids.end(), std::back_inserter(edge_attrs),
+                   [](const auto &edge_attr_id) { return edge_attr_id.second; });
+    return edge_attrs;
+}
+
+template <typename N, typename E>
 void DiGraph<N, E>::add_edge(const N &u, const N &v, const E &edge_attr)
 {
     int u_id{};
@@ -256,8 +264,7 @@ std::stringstream DiGraph<N, E>::generate_dot() const
 
     ss_dot << "/*"
            << "\n=== NODES ===";
-    std::map<int, N> sorted_node_ids(node_ids.begin(), node_ids.end());
-    std::for_each(sorted_node_ids.begin(), sorted_node_ids.end(),
+    std::for_each(this->node_ids.begin(), this->node_ids.end(),
                   [&ss_dot](const std::pair<int, N> &p) {
                       ss_dot << '\n'
                              << p.first << ":\n"
@@ -267,8 +274,7 @@ std::stringstream DiGraph<N, E>::generate_dot() const
     if (this->edge_attr_ids.size() > 1)
     {
         ss_dot << "\n=== EDGES ===";
-        std::map<int, E> sorted_edge_attr_ids(edge_attr_ids.begin(), edge_attr_ids.end());
-        std::for_each(sorted_edge_attr_ids.begin(), sorted_edge_attr_ids.end(),
+        std::for_each(this->edge_attr_ids.begin(), this->edge_attr_ids.end(),
                       [&ss_dot](const std::pair<int, E> &p) {
                           ss_dot << '\n'
                                  << p.first << ":\n"
