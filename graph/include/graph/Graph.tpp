@@ -3,7 +3,6 @@
 #include <memory>        // std::make_shared, std::shared_ptr
 #include <sstream>       // std::stringstream
 #include <string>        // std::string
-#include <unordered_map> // std::unordered_map
 #include <utility>       // std::make_pair, std::pair
 #include <vector>        // std::vector
 
@@ -135,8 +134,7 @@ std::stringstream Graph<T>::generate_dot() const
     std::stringstream ss_dot{};
 
     ss_dot << "/*";
-    std::map<int, T> sorted_node_ids(node_ids.begin(), node_ids.end());
-    std::for_each(sorted_node_ids.begin(), sorted_node_ids.end(),
+    std::for_each(this->node_ids.begin(), this->node_ids.end(),
                   [&ss_dot](const std::pair<int, T> &p) {
                       ss_dot << '\n'
                              << p.first << ":\n"

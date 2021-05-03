@@ -1,11 +1,11 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include <sstream>       // std::stringstream
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <utility>       // std::pair
-#include <vector>        // std::vector
+#include <map>     // std::map
+#include <sstream> // std::stringstream
+#include <string>  // std::string
+#include <utility> // std::pair
+#include <vector>  // std::vector
 
 #include <plot/I_Plotable.hpp>
 
@@ -16,8 +16,8 @@ private:
     static constexpr char def_name[] = "undirectional_graph";
     std::string name;
 
-    std::unordered_map<int, std::vector<int>> adjacency_list;
-    std::unordered_map<int, T> node_ids;
+    std::map<int, std::vector<int>> adjacency_list;
+    std::map<int, T> node_ids;
 
     std::vector<T> nodes;
     std::vector<std::pair<T, T>> edges;
@@ -41,7 +41,7 @@ public:
 
     std::string get_name() const override;
     void set_name(const std::string &name);
-    
+
     std::stringstream generate_dot() const override;
     void plot(const std::string &output_loc) const;
 };
