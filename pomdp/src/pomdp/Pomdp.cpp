@@ -1,19 +1,19 @@
-#include <algorithm>     // std::copy, std::copy_if, std::count_if, std::find, std::for_each, std::max_element, std::sort, std::transform, std::unique
-#include <cctype>        // std::alpha, std::isdigit, std::isspace
-#include <cstdio>        // std::FILE, std::fclose, std::fopen
-#include <cstdlib>       // std::system
-#include <ctype.h>       // std::tolower
-#include <deque>         // std::deque
-#include <filesystem>    // std::filesystem::current_path
-#include <ios>           // std::streamsize
-#include <iostream>      // std::cerr, std::cin, std::cout, std::endl
-#include <iterator>      // std::back_inserter, std::ostream_iterator
-#include <limits>        // std::numeric_limits
-#include <sstream>       // std::istringstream, std::ostringstream
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <utility>       // std::make_pair, std::pair
-#include <vector>        // std::vector
+#include <algorithm>  // std::copy, std::copy_if, std::count_if, std::find, std::for_each, std::max_element, std::sort, std::transform, std::unique
+#include <cctype>     // std::alpha, std::isdigit, std::isspace
+#include <cstdio>     // std::FILE, std::fclose, std::fopen
+#include <cstdlib>    // std::system
+#include <ctype.h>    // std::tolower
+#include <deque>      // std::deque
+#include <filesystem> // std::filesystem::current_path
+#include <ios>        // std::streamsize
+#include <iostream>   // std::cerr, std::cin, std::cout, std::endl
+#include <iterator>   // std::back_inserter, std::ostream_iterator
+#include <limits>     // std::numeric_limits
+#include <sstream>    // std::istringstream, std::ostringstream
+#include <string>     // std::string
+#include <map>        // std::map
+#include <utility>    // std::make_pair, std::pair
+#include <vector>     // std::vector
 
 #include <graph/DiGraph.hpp>
 
@@ -73,12 +73,14 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
                    });
 
     // ACTIONS
-    this->_add_action(Action{}); // wait action
+    this->state_graph = this->_generate_state_graph();
+    this->state_graph.set_name(this->file_name + "_state_graph");
 
-    std::vector<std::pair<Subassembly, std::vector<Subassembly>>> aog_edges{this->assembly.get_ao_graph().get_edges()};
-    std::for_each(aog_edges.begin(), aog_edges.end(), [this](const auto &edge) {
-        this->_add_action(Action{edge.second, edge.first});
+    std::vector<Action> sg_actions{this->state_graph.get_edge_attrs()};
+    std::for_each(sg_actions.begin(), sg_actions.end(), [this](const auto &action) {
+        this->_add_action(action);
     });
+    this->_add_action(Action{}); // wait action
 
     // robot can only wait or extend existing subassemblies (i.e. grasp one part + tool)
     this->robot_actions.push_back(Action{}); // wait action
@@ -93,8 +95,8 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
                      return (count == 1);
                  });
 
-    this->state_graph = this->_generate_state_graph();
     this->intention_graph = this->_generate_intention_graph();
+    this->intention_graph.set_name(this->file_name + "_intention_graph");
 
     // INTENTIONS
     std::vector<Intention> ig_nodes{this->intention_graph.get_nodes()};
@@ -111,7 +113,7 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
         for (const Subassembly &subasm : action.get_preconditions())
         {
             if (subasm.size() == 1)
-                manip_components.push_back(subasm.at(0));
+                manip_components.push_back(subasm.front());
         }
         std::sort(manip_components.begin(), manip_components.end());
 
@@ -124,8 +126,16 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
         int observation_id{};
         this->_get_id(observation, observation_id);
 
-        if (action_id == 0) // in case of wait action
-            this->action_obs_mapping.emplace(std::make_pair(0, 0));
+        if (action == Action{}) // in case of wait action
+        {
+            int wait_action_id{};
+            this->_get_id(Action{}, wait_action_id);
+
+            int wait_observation_id{};
+            this->_get_id(Observation{}, wait_observation_id);
+
+            this->action_obs_mapping.emplace(std::make_pair(wait_action_id, wait_observation_id));
+        }
         else
             this->action_obs_mapping.emplace(std::make_pair(action_id, observation_id));
     }
@@ -291,7 +301,7 @@ void Pomdp::_init_observation_func()
                           [this, &intention_id, &action_id, &x](const Observation observation) {
                               int observation_id{};
                               this->_get_id(observation, observation_id);
-                              if (observation_id == 0)
+                              if (observation == Observation{})
                                   this->observation_probabilities.at(intention_id).at(action_id).at(observation_id) = x / 4.0;
                               else
                                   this->observation_probabilities.at(intention_id).at(action_id).at(observation_id) = x;
@@ -306,9 +316,9 @@ void Pomdp::_init_reward_func()
         std::vector<std::vector<double>>(this->num_intentions, std::vector<double>(this->num_actions, 0.0));
 
     int ACT_ACC_INTENTION_TASK_ALLOC_REWARD = 10;
-    int ACT_NOT_ACC_INTENTION_REWARD = -10;
-    int WAIT_REWARD = 0;                    // -1
-    int ACT_NOT_ACC_TASK_ALLOC_REWARD = -1; // -2
+    int ACT_NOT_ACC_INTENTION_REWARD = -50;
+    int WAIT_REWARD = 0;
+    int ACT_NOT_ACC_TASK_ALLOC_REWARD = -2;
 
     for (int intention_id{0}; intention_id < this->num_intentions; ++intention_id)
     {
@@ -320,7 +330,7 @@ void Pomdp::_init_reward_func()
             std::vector<Action> possible_actions{this->_get_actions(intention)};
             if (std::find(possible_actions.begin(), possible_actions.end(), action) != possible_actions.end())
             {
-                if (action_id == 0)
+                if (action == Action{})
                     this->rewards.at(intention_id).at(action_id) = WAIT_REWARD;
                 else
                 {
@@ -336,9 +346,9 @@ void Pomdp::_init_reward_func()
     }
 }
 
-DiGraph<State> Pomdp::_generate_state_graph() const
+DiGraph<State, Action> Pomdp::_generate_state_graph() const
 {
-    DiGraph<State> state_graph{};
+    DiGraph<State, Action> state_graph{};
     std::deque<State> open_states{};
 
     std::vector<Subassembly> root_subasms{this->assembly.get_ao_graph().get_root_nodes()};
@@ -360,10 +370,8 @@ DiGraph<State> Pomdp::_generate_state_graph() const
                 successor_state.insert(successor_state.end(), successor_subasms.begin(), successor_subasms.end());
                 std::sort(successor_state.begin(), successor_state.end());
 
-                int action_id{};
-                this->_get_id(Action{successor_subasms, subasm}, action_id);
-
-                state_graph.add_edge(successor_state, open_state, action_id);
+                Action action{successor_subasms, subasm};
+                state_graph.add_edge(successor_state, open_state, action);
                 open_states.push_back(successor_state);
             }
         }
@@ -371,11 +379,11 @@ DiGraph<State> Pomdp::_generate_state_graph() const
     return state_graph;
 }
 
-DiGraph<Intention> Pomdp::_generate_intention_graph() const
+DiGraph<Intention, Action> Pomdp::_generate_intention_graph() const
 {
-    DiGraph<State> state_graph{this->state_graph.reverse()};
+    DiGraph<State, Action> state_graph{this->state_graph.reverse()};
 
-    DiGraph<Intention> intention_graph{};
+    DiGraph<Intention, Action> intention_graph{};
     std::deque<Intention> open_intentions{};
 
     std::vector<State> root_states{state_graph.get_root_nodes()};
@@ -393,8 +401,8 @@ DiGraph<Intention> Pomdp::_generate_intention_graph() const
             Intention successor_intention{open_intention};
             successor_intention.push_back(successor_state);
 
-            int action_id{state_graph.get_edge_attr(std::make_pair(open_state, successor_state))};
-            intention_graph.add_edge(successor_intention, open_intention, action_id);
+            Action action{state_graph.get_edge_attr(std::make_pair(open_state, successor_state))};
+            intention_graph.add_edge(successor_intention, open_intention, action);
             open_intentions.push_back(successor_intention);
         }
     }
@@ -409,14 +417,14 @@ std::vector<Intention> Pomdp::_get_state_trans(const Intention &current_intentio
     if (this->_get_id(action, action_id))
     {
         std::vector<Intention> interm_intentions{};
-        if (action_id == 0) // in case robot performs wait action
+        if (action == Action{}) // in case robot performs wait action
             interm_intentions.push_back(current_intention);
         else
         {
             std::vector<Intention> successors{this->intention_graph.get_successors(current_intention)};
             std::copy_if(successors.begin(), successors.end(), std::back_inserter(interm_intentions),
-                         [this, &action_id, &current_intention](const Intention &successor) {
-                             return (this->intention_graph.get_edge_attr(std::make_pair(current_intention, successor)) == action_id);
+                         [this, &action, &current_intention](const Intention &successor) {
+                             return (this->intention_graph.get_edge_attr(std::make_pair(current_intention, successor)) == action);
                          });
         }
 
@@ -440,12 +448,12 @@ std::vector<Intention> Pomdp::_get_state_trans(const Intention &current_intentio
 
 std::vector<Action> Pomdp::_get_actions(const Intention &intention) const
 {
-    std::vector<Action> actions{this->action_ids.at(0)}; // wait action is always possible
+    std::vector<Action> actions{Action{}}; // wait action is always possible
 
     for (const Intention &successor : this->intention_graph.get_successors(intention))
     {
-        int action_id{this->intention_graph.get_edge_attr(std::make_pair(intention, successor))};
-        actions.push_back(this->action_ids.at(action_id));
+        Action action{this->intention_graph.get_edge_attr(std::make_pair(intention, successor))};
+        actions.push_back(action);
     }
 
     return actions;
@@ -453,12 +461,12 @@ std::vector<Action> Pomdp::_get_actions(const Intention &intention) const
 
 std::vector<Action> Pomdp::_get_prev_actions(const Intention &intention) const
 {
-    std::vector<Action> prev_actions{this->action_ids.at(0)}; // wait action is always possible
+    std::vector<Action> prev_actions{Action{}}; // wait action is always possible
 
     for (const Intention &predecessor : this->intention_graph.get_predecessors(intention))
     {
-        int action_id{this->intention_graph.get_edge_attr(std::make_pair(predecessor, intention))};
-        prev_actions.push_back(this->action_ids.at(action_id));
+        Action action{this->intention_graph.get_edge_attr(std::make_pair(predecessor, intention))};
+        prev_actions.push_back(action);
     }
 
     return prev_actions;
@@ -506,6 +514,16 @@ std::vector<Observation> Pomdp::get_observations() const
     std::transform(this->observation_ids.begin(), this->observation_ids.end(), std::back_inserter(observations),
                    [](const auto &observation_id) { return observation_id.second; });
     return observations;
+}
+
+DiGraph<State, Action> Pomdp::get_state_graph() const
+{
+    return this->state_graph;
+}
+
+DiGraph<Intention, Action> Pomdp::get_intention_graph() const
+{
+    return this->intention_graph;
 }
 
 std::vector<double> Pomdp::get_init_belief() const
@@ -683,7 +701,7 @@ Action Pomdp::get_optimal_action(const std::vector<double> &belief) const
 {
     Action optimal_action{};
 
-    std::unordered_map<int, double> action_values{};
+    std::map<int, double> action_values{};
     if (!this->policy.empty())
     {
         for (const std::pair<int, std::vector<std::vector<double>>> &action_alpha_vec_pair : this->policy)

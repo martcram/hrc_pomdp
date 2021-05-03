@@ -1,4 +1,5 @@
-#include <vector> // std::vector
+#include <ostream> // std::ostream
+#include <vector>  // std::vector
 
 #include <main/Component.hpp>
 
@@ -14,6 +15,16 @@ Observation::Observation(const std::vector<Component> &manip_components, bool ma
 {
 }
 
+std::vector<Component> Observation::get_manip_components() const
+{
+    return this->manip_components;
+}
+
+bool Observation::is_tool_manipulated() const
+{
+    return this->manip_tool;
+}
+
 bool Observation::operator==(const Observation &rhs) const
 {
     return ((this->manip_components == rhs.manip_components) && (this->manip_tool == rhs.manip_tool));
@@ -22,4 +33,11 @@ bool Observation::operator==(const Observation &rhs) const
 bool Observation::operator<(const Observation &rhs) const
 {
     return ((this->manip_components < rhs.manip_components) && (this->manip_tool < rhs.manip_tool));
+}
+
+std::ostream &operator<<(std::ostream &os, const Observation &observation)
+{
+    os << observation.get_manip_components() << " - "
+       << (observation.is_tool_manipulated() ? "True" : "False");
+    return os;
 }

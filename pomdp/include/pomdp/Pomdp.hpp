@@ -1,9 +1,9 @@
 #ifndef POMDP_HPP
 #define POMDP_HPP
 
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <vector>        // std::vector
+#include <map>    // std::map
+#include <string> // std::string
+#include <vector> // std::vector
 
 #include <graph/DiGraph.hpp>
 
@@ -24,12 +24,12 @@ private:
     std::string file_name;
 
     Assembly assembly;
-    DiGraph<State> state_graph;
-    DiGraph<Intention> intention_graph;
+    DiGraph<State, Action> state_graph;
+    DiGraph<Intention, Action> intention_graph;
 
-    std::unordered_map<int, Intention> intention_ids;
-    std::unordered_map<int, Action> action_ids;
-    std::unordered_map<int, Observation> observation_ids;
+    std::map<int, Intention> intention_ids;
+    std::map<int, Action> action_ids;
+    std::map<int, Observation> observation_ids;
 
     std::unordered_map<int, int> action_obs_mapping;
 
@@ -65,8 +65,8 @@ private:
     void _init_observation_func();
     void _init_reward_func();
 
-    DiGraph<State> _generate_state_graph() const;
-    DiGraph<Intention> _generate_intention_graph() const;
+    DiGraph<State, Action> _generate_state_graph() const;
+    DiGraph<Intention, Action> _generate_intention_graph() const;
     std::vector<Intention> _get_state_trans(const Intention &current_intention, const Action &action) const;
     std::vector<Action> _get_actions(const Intention &intention) const;
     std::vector<Action> _get_prev_actions(const Intention &intention) const;
@@ -81,6 +81,9 @@ public:
     std::vector<Intention> get_intentions() const;
     std::vector<Action> get_actions() const;
     std::vector<Observation> get_observations() const;
+
+    DiGraph<State, Action> get_state_graph() const;
+    DiGraph<Intention, Action> get_intention_graph() const;
 
     std::vector<double> get_init_belief() const;
     std::vector<std::vector<std::vector<double>>> get_state_trans_probabilities() const;

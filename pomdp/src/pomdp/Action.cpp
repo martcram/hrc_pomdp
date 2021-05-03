@@ -1,4 +1,5 @@
-#include <algorithm> // std::sort
+#include <algorithm> // std::for_each, std::sort
+#include <ostream>   // std::ostream
 #include <vector>    // std::vector
 
 #include <main/Component.hpp>
@@ -35,4 +36,15 @@ bool Action::operator==(const Action &rhs) const
 bool Action::operator<(const Action &rhs) const
 {
     return ((this->preconditions < rhs.preconditions) && (this->effect < rhs.effect));
+}
+
+std::ostream &operator<<(std::ostream &os, const Action &action)
+{
+    std::vector<Subassembly> preconditions{action.get_preconditions()};
+    std::for_each(preconditions.begin(), preconditions.end(),
+                  [&os](const Subassembly &precond) {
+                      os << precond << " ";
+                  });
+    os << "--> " << action.get_effect();
+    return os;
 }

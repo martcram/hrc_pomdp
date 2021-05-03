@@ -30,6 +30,8 @@ namespace utils
 
     template <typename T>
     T dot_product(const std::vector<T> &v1, const std::vector<T> &v2);
+
+    std::string to_snake_case(const std::string &string);
 } // namespace utils
 
 #include <utils/utils.tpp>
