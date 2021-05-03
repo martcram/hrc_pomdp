@@ -1,9 +1,9 @@
 #ifndef POMDP_HPP
 #define POMDP_HPP
 
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <vector>        // std::vector
+#include <map>    // std::map
+#include <string> // std::string
+#include <vector> // std::vector
 
 #include <graph/DiGraph.hpp>
 
@@ -27,9 +27,9 @@ private:
     DiGraph<State, Action> state_graph;
     DiGraph<Intention, Action> intention_graph;
 
-    std::unordered_map<int, Intention> intention_ids;
-    std::unordered_map<int, Action> action_ids;
-    std::unordered_map<int, Observation> observation_ids;
+    std::map<int, Intention> intention_ids;
+    std::map<int, Action> action_ids;
+    std::map<int, Observation> observation_ids;
 
     std::unordered_map<int, int> action_obs_mapping;
 
