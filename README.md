@@ -12,17 +12,14 @@ This project started in the context of Ph.D. research into _intention-based huma
 These instructions will help you get the presented software up and running on your local machine.
 
 ### Dependencies
-The third-party libraries used in this project are acquired and managed by the open source C/C++ dependency manager 'vcpkg'. Instructions about how to install this package manager can be found on vcpkg's [website](https://vcpkg.io/en/getting-started.html).
-
 This project relies on the following external C++ libraries:
 * [boost](https://www.boost.org/)
 * [tinyxml2](https://github.com/leethomason/tinyxml2)
 * [graphviz](https://graphviz.org/)
 
-... that can be installed by executing the next commands:
+... that can be installed by executing the next command:
 ```shell
-$ cd <path-to-src-directory-of-vcpkg>
-$ ./vcpkg install <packages-to-install>
+$ sudo apt install libboost-all-dev libtinyxml2-dev libgraphviz-dev
 ```
 
 ## License
