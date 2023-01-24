@@ -10,6 +10,12 @@ add_subdirectory(pomdp)
 add_subdirectory(plot)
 add_subdirectory(utils)
 
+add_library(${PROJECT_NAME}::graph ALIAS graph)
+add_library(${PROJECT_NAME}::main  ALIAS main)
+add_library(${PROJECT_NAME}::pomdp ALIAS pomdp)
+add_library(${PROJECT_NAME}::plot  ALIAS plot)
+add_library(${PROJECT_NAME}::utils ALIAS utils)
+
 # add_executable(
 #     hrc_pomdp
 #     main.cpp
