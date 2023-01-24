@@ -296,4 +296,11 @@ void Assembly::import_ao_graph(const std::string &file_path)
         ao_graph.add_edge(parent_subasm, child_subasms);
     }
     this->ao_graph = ao_graph;
+
+    std::vector<Component> comps{};
+    std::transform(leaf_comp_ids.begin(), leaf_comp_ids.end(), std::back_inserter(comps),
+        [components](const std::string &leaf_comp_id){
+            return Component{components.at(leaf_comp_id).at("label")};
+        });
+    this->components = comps;
 }
