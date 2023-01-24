@@ -229,14 +229,12 @@ AndOrGraph<Subassembly> Assembly::get_ao_graph() const
     return this->ao_graph;
 }
 
-void Assembly::import_ao_graph(const std::string &file_path)
+void Assembly::import_ao_graph(const nlohmann::json &json)
 {
-    AndOrGraph<std::string> ao_graph_ids{};
-    std::ifstream file_stream{file_path};
-    nlohmann::json data = nlohmann::json::parse(file_stream);
-    nlohmann::json components = data.at("components");
-    nlohmann::json unions = data.at("unions");
+    nlohmann::json components = json.at("components");
+    nlohmann::json unions = json.at("unions");
 
+    AndOrGraph<std::string> ao_graph_ids{};
     for (const nlohmann::json &u: unions)
         ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"));
 
@@ -303,4 +301,11 @@ void Assembly::import_ao_graph(const std::string &file_path)
             return Component{components.at(leaf_comp_id).at("label")};
         });
     this->components = comps;
+}
+
+void Assembly::import_ao_graph(const std::string &file_path)
+{
+    std::ifstream file_stream{file_path};
+    nlohmann::json data = nlohmann::json::parse(file_stream);
+    this->import_ao_graph(data);
 }
