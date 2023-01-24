@@ -10,9 +10,9 @@ add_subdirectory(pomdp)
 add_subdirectory(plot)
 add_subdirectory(utils)
 
-add_executable(
-    hrc_pomdp
-    main.cpp
-)
+# add_executable(
+#     hrc_pomdp
+#     main.cpp
+# )
 
-target_link_libraries(hrc_pomdp PUBLIC graph main pomdp plot utils)
+# target_link_libraries(hrc_pomdp PUBLIC graph main pomdp plot utils)
