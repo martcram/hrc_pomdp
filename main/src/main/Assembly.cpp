@@ -1,7 +1,10 @@
-#include <algorithm>     // std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
+#include <algorithm>     // std::copy, std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
 #include <cmath>         // std::ceil
-#include <iterator>      // std::back_inserter
+#include <fstream>       // std::ifstream
+#include <iterator>      // std::back_inserter, std::inserter
 #include <map>           // std::map
+#include <set>           // std::set
+#include <string>        // std::string 
 #include <unordered_map> // std::unordered_map
 #include <utility>       // std::pair
 #include <vector>        // std::vector
@@ -14,6 +17,8 @@
 #include <main/Component.hpp>
 
 #include <utils/utils.hpp> // utils::cartesian_product
+
+#include <nlohmann/json.hpp>
 
 using Subassembly = std::vector<Component>;
 
@@ -222,4 +227,73 @@ std::vector<Component> Assembly::get_components() const
 AndOrGraph<Subassembly> Assembly::get_ao_graph() const
 {
     return this->ao_graph;
+}
+
+void Assembly::import_ao_graph(const std::string &file_path)
+{
+    AndOrGraph<std::string> ao_graph_ids{};
+    std::ifstream file_stream{file_path};
+    nlohmann::json data = nlohmann::json::parse(file_stream);
+    nlohmann::json components = data.at("components");
+    nlohmann::json unions = data.at("unions");
+
+    for (const nlohmann::json &u: unions)
+        ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"));
+
+    std::vector<std::string> leaf_comp_ids{ao_graph_ids.get_leaf_nodes()};
+    std::unordered_map<std::string, Subassembly> comp_subasm_mapping{};
+    for (const std::string &leaf_comp_id : leaf_comp_ids)
+        comp_subasm_mapping.emplace(std::make_pair(leaf_comp_id, Subassembly{{Component{components.at(leaf_comp_id).at("label")}}}));
+    std::vector<std::string> component_mapping_ids{};
+    for (auto it = comp_subasm_mapping.begin(); it != comp_subasm_mapping.end(); ++it) 
+        component_mapping_ids.push_back(it->first);
+
+    std::set<std::string> open_union_ids{};
+    for (const std::string &leaf_comp_id : leaf_comp_ids)
+    {
+        std::vector<std::string> parent_unions = components.at(leaf_comp_id).at("parent_unions");
+        std::copy(parent_unions.begin(), parent_unions.end(), std::inserter(open_union_ids, open_union_ids.end()));
+    }
+    while(!open_union_ids.empty())
+    {        
+        std::vector<std::string> erasable_union_ids{};
+        std::set<std::string> new_union_ids{};
+        for (const std::string &union_id : open_union_ids)
+        {
+            std::vector<std::string> child_comp_ids = unions.at(union_id).at("child_components");
+            std::sort(component_mapping_ids.begin(), component_mapping_ids.end());
+            std::sort(child_comp_ids.begin(), child_comp_ids.end());
+
+            if (std::includes(component_mapping_ids.begin(), component_mapping_ids.end(), child_comp_ids.begin(), child_comp_ids.end()))
+            {
+                std::string parent_comp_id{unions.at(union_id).at("parent_component")};
+                Subassembly child_subasm{};
+                for (const std::string &child_comp_id : child_comp_ids)
+                    child_subasm.insert(child_subasm.end(), comp_subasm_mapping.at(child_comp_id).begin(), comp_subasm_mapping.at(child_comp_id).end() );
+                comp_subasm_mapping.emplace(std::make_pair(parent_comp_id, child_subasm));
+                component_mapping_ids.push_back(parent_comp_id);
+
+                erasable_union_ids.push_back(union_id);
+                std::vector<std::string> new_parent_unions = components.at(parent_comp_id).at("parent_unions");
+                std::copy(new_parent_unions.begin(), new_parent_unions.end(), std::inserter(new_union_ids, new_union_ids.end()));
+            }
+        }
+        for (const std::string &u : erasable_union_ids)
+            open_union_ids.erase(std::find(open_union_ids.begin(), open_union_ids.end(), u));
+        open_union_ids.insert(new_union_ids.begin(), new_union_ids.end());
+    }
+
+    AndOrGraph<Subassembly> ao_graph{};
+    for (const auto &edge : ao_graph_ids.get_edges())
+    {
+        Subassembly parent_subasm{comp_subasm_mapping.at(edge.first)};
+        std::vector<Subassembly> child_subasms{};
+        std::transform(edge.second.begin(), edge.second.end(), std::back_inserter(child_subasms), 
+            [comp_subasm_mapping](const std::string &child_id)
+            {
+                return comp_subasm_mapping.at(child_id);
+            });
+        ao_graph.add_edge(parent_subasm, child_subasms);
+    }
+    this->ao_graph = ao_graph;
 }

@@ -1,6 +1,7 @@
 #ifndef ASSEMBLY_HPP
 #define ASSEMBLY_HPP
 
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -9,6 +10,8 @@
 #include <graph/Graph.hpp>
 
 #include <main/Component.hpp>
+
+#include <nlohmann/json.hpp>
 
 using Subassembly = std::vector<Component>;
 
@@ -37,6 +40,8 @@ public:
 
     std::vector<Component> get_components() const;
     AndOrGraph<Subassembly> get_ao_graph() const;
+
+    void import_ao_graph(const std::string &file_path);
 };
 
 #endif // ASSEMBLY_HPP
