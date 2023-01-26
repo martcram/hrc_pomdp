@@ -1,7 +1,8 @@
 #include <algorithm>     // std::copy_if, std::find, std::find_if, std::for_each, std::sort, std::transform
 #include <iterator>      // std::back_inserter
+#include <tuple>         // std::get, std::make_tuple, std::tuple
 #include <unordered_map> // std::unordered_map
-#include <utility>       // std::make_pair, std::pair
+#include <utility>       // std::make_pair
 #include <vector>        // std::vector
 
 template <typename T>
@@ -11,7 +12,7 @@ AndOrGraph<T>::AndOrGraph()
 }
 
 template <typename T>
-AndOrGraph<T>::AndOrGraph(const std::vector<std::pair<T, std::vector<T>>> &edges)
+AndOrGraph<T>::AndOrGraph(const std::vector<std::tuple<T, std::vector<T>, int>> &edges)
     : AndOrGraph<T>()
 {
     this->add_edges(edges);
@@ -39,8 +40,8 @@ bool AndOrGraph<T>::Node::operator<(const Node &rhs) const
 
 // EDGE - BEGIN
 template <typename T>
-AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes)
-    : child_nodes{}
+AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id)
+    : child_nodes{}, id{id}
 {
     std::copy_if(child_nodes.begin(), child_nodes.end(), std::back_inserter(this->child_nodes),
                  [this](const Node child_node) {
@@ -105,16 +106,25 @@ std::vector<T> AndOrGraph<T>::get_nodes() const
 }
 
 template <typename T>
-std::vector<std::pair<T, std::vector<T>>> AndOrGraph<T>::get_edges() const
+std::vector<std::tuple<T, std::vector<T>, int>> AndOrGraph<T>::get_edges() const
 {
-    std::vector<std::pair<T, std::vector<T>>> edges_data{};
+    std::vector<std::tuple<T, std::vector<T>, int>> edges_data{};
 
     for (const auto m : this->node_ids)
     {
-        T parent_node{m.second.data};
-        for (const std::vector<T> &edge_successors : this->get_successors(parent_node))
+        int parent_node_id{};
+        if (this->get_id(m.second, parent_node_id))
         {
-            edges_data.push_back(std::make_pair(parent_node, edge_successors));
+            T parent_node{m.second.data};
+            for (const AndEdge &edge : this->adjacency_list.at(parent_node_id))
+            {               
+                std::vector<T> child_data{};
+                std::transform(edge.child_nodes.begin(), edge.child_nodes.end(), std::back_inserter(child_data),
+                            [](const Node child_node) {
+                                return child_node.data;
+                            });
+                edges_data.push_back(std::make_tuple(parent_node, child_data, edge.id));
+            }
         }
     }
 
@@ -189,7 +199,7 @@ std::vector<T> AndOrGraph<T>::get_leaf_nodes() const
 }
 
 template <typename T>
-void AndOrGraph<T>::add_edge(const T &parent_data, const std::vector<T> &child_data)
+void AndOrGraph<T>::add_edge(const T &parent_data, const std::vector<T> &child_data, int id)
 {
     Node parent_node{parent_data};
     int parent_id{};
@@ -205,17 +215,17 @@ void AndOrGraph<T>::add_edge(const T &parent_data, const std::vector<T> &child_d
         child_nodes.push_back(child_node);
     }
 
-    AndEdge edge{child_nodes};
+    AndEdge edge{child_nodes, id};
     auto it = this->adjacency_list.find(parent_id);
     if (std::find(it->second.begin(), it->second.end(), edge) == it->second.end())
         it->second.push_back(edge);
 }
 
 template <typename T>
-void AndOrGraph<T>::add_edges(const std::vector<std::pair<T, std::vector<T>>> &edges)
+void AndOrGraph<T>::add_edges(const std::vector<std::tuple<T, std::vector<T>, int>> &edges)
 {
     std::for_each(edges.begin(), edges.end(),
-                  [this](const std::pair<T, std::vector<T>> &edge) {
-                      this->add_edge(edge.first, edge.second);
+                  [this](const std::tuple<T, std::vector<T>, int> &edge) {
+                      this->add_edge(std::get<0>(edge), std::get<1>(edge), std::get<2>(edge));
                   });
 }

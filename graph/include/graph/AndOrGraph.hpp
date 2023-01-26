@@ -1,8 +1,8 @@
 #ifndef AND_OR_GRAPH_HPP
 #define AND_OR_GRAPH_HPP
 
+#include <tuple>         // std::tuple
 #include <unordered_map> // std::unordered_map
-#include <utility>       // std::pair
 #include <vector>        // std::vector
 
 template <typename T>
@@ -23,8 +23,9 @@ private:
     struct AndEdge
     {
         std::vector<Node> child_nodes;
+        int id;
 
-        explicit AndEdge(const std::vector<Node> &child_nodes);
+        explicit AndEdge(const std::vector<Node> &child_nodes, int id);
         ~AndEdge() = default;
 
         bool operator==(const AndEdge &rhs) const;
@@ -40,11 +41,11 @@ private:
 
 public:
     AndOrGraph();
-    explicit AndOrGraph(const std::vector<std::pair<T, std::vector<T>>> &edges);
+    explicit AndOrGraph(const std::vector<std::tuple<T, std::vector<T>, int>> &edges);
     ~AndOrGraph() = default;
 
     std::vector<T> get_nodes() const;
-    std::vector<std::pair<T, std::vector<T>>> get_edges() const;
+    std::vector<std::tuple<T, std::vector<T>, int>> get_edges() const;
 
     std::vector<std::vector<T>> get_successors(const T &data) const;
     std::vector<T> get_predecessors(const T &data) const;
@@ -52,8 +53,8 @@ public:
     std::vector<T> get_root_nodes() const;
     std::vector<T> get_leaf_nodes() const;
 
-    void add_edge(const T &parent_data, const std::vector<T> &child_data);
-    void add_edges(const std::vector<std::pair<T, std::vector<T>>> &edges);
+    void add_edge(const T &parent_data, const std::vector<T> &child_data, int id = -1);
+    void add_edges(const std::vector<std::tuple<T, std::vector<T>, int>> &edges);
 };
 
 #include <graph/AndOrGraph.tpp>
