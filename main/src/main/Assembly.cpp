@@ -1,10 +1,12 @@
-#include <algorithm>     // std::copy, std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
+#include <algorithm>     // std::adjacent_find, std::copy, std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
 #include <cmath>         // std::ceil
 #include <fstream>       // std::ifstream
+#include <iostream>      // std::cout
 #include <iterator>      // std::back_inserter, std::inserter
 #include <map>           // std::map
 #include <set>           // std::set
-#include <string>        // std::string 
+#include <string>        // std::string
+#include <tuple>         // std::get 
 #include <unordered_map> // std::unordered_map
 #include <utility>       // std::pair
 #include <vector>        // std::vector
@@ -235,8 +237,39 @@ void Assembly::import_ao_graph(const nlohmann::json &json)
     nlohmann::json unions = json.at("unions");
 
     AndOrGraph<std::string> ao_graph_ids{};
+
+    bool has_union_ids{true};
+    std::vector<int> union_ids{};
     for (const nlohmann::json &u: unions)
-        ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"));
+    {
+        if (u.contains("id"))
+            union_ids.push_back(u.at("id")); // check if every union is accompanied by an id
+        else
+        {
+            std::cout << "[Import AND-OR graph]: Union ID(s) missing in the JSON object. Using default ids instead."
+                      << std::endl;
+            has_union_ids = false;
+            break;
+        }
+    }
+
+    bool has_unique_union_ids{false};
+    if (has_union_ids)
+    {
+        std::sort(union_ids.begin(), union_ids.end());
+        has_unique_union_ids = std::adjacent_find(union_ids.begin(), union_ids.end()) == union_ids.end(); // check if every union_id is unique
+        if (!has_unique_union_ids)
+            std::cout << "[Import AND-OR graph]: Union IDs specified in the JSON object are not unique. Using default ids instead."
+                      << std::endl;
+    }
+
+    for (const nlohmann::json &u: unions)
+    {
+        if (has_union_ids && has_unique_union_ids)
+            ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"), u.at("id"));
+        else
+            ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"));
+    }
 
     std::vector<std::string> leaf_comp_ids{ao_graph_ids.get_leaf_nodes()};
     std::unordered_map<std::string, Subassembly> comp_subasm_mapping{};
@@ -284,14 +317,15 @@ void Assembly::import_ao_graph(const nlohmann::json &json)
     AndOrGraph<Subassembly> ao_graph{};
     for (const auto &edge : ao_graph_ids.get_edges())
     {
-        Subassembly parent_subasm{comp_subasm_mapping.at(edge.first)};
+        int edge_id{std::get<2>(edge)};
+        Subassembly parent_subasm{comp_subasm_mapping.at(std::get<0>(edge))};
         std::vector<Subassembly> child_subasms{};
-        std::transform(edge.second.begin(), edge.second.end(), std::back_inserter(child_subasms), 
+        std::transform(std::get<1>(edge).begin(), std::get<1>(edge).end(), std::back_inserter(child_subasms), 
             [comp_subasm_mapping](const std::string &child_id)
             {
                 return comp_subasm_mapping.at(child_id);
             });
-        ao_graph.add_edge(parent_subasm, child_subasms);
+        ao_graph.add_edge(parent_subasm, child_subasms, edge_id);
     }
     this->ao_graph = ao_graph;
 
