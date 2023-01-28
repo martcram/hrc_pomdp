@@ -1,5 +1,6 @@
-#include <algorithm>     // std::adjacent_find, std::copy, std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
+#include <algorithm>     // std::adjacent_difference, std::all_of, std::copy, std::copy_if, std::find, std::includes, std::set_intersection, std::set_union, std::sort, std::transform, std::unique
 #include <cmath>         // std::ceil
+#include <deque>         // std::deque
 #include <fstream>       // std::ifstream
 #include <iostream>      // std::cout
 #include <iterator>      // std::back_inserter, std::inserter
@@ -253,19 +254,24 @@ void Assembly::import_ao_graph(const nlohmann::json &json)
         }
     }
 
-    bool has_unique_union_ids{false};
+    bool has_valid_ids{false};
     if (has_union_ids)
     {
+        // check if the union IDs increment by 1 and the first id equals '0'.
         std::sort(union_ids.begin(), union_ids.end());
-        has_unique_union_ids = std::adjacent_find(union_ids.begin(), union_ids.end()) == union_ids.end(); // check if every union_id is unique
-        if (!has_unique_union_ids)
-            std::cout << "[Import AND-OR graph]: Union IDs specified in the JSON object are not unique. Using default ids instead."
+        std::deque<int> diff_union_ids{};
+        std::adjacent_difference(union_ids.begin(), union_ids.end(), std::back_inserter(diff_union_ids));
+        diff_union_ids.pop_front();
+
+        has_valid_ids = std::all_of(diff_union_ids.begin(), diff_union_ids.end(), [](int diff){return (diff == 1);}) && (union_ids.at(0) == 0);
+        if (!has_valid_ids)
+            std::cout << "[Import AND-OR graph]: Union IDs are not valid. They should start at '0' and increment by '1'. Using default ids instead."
                       << std::endl;
     }
 
     for (const nlohmann::json &u: unions)
     {
-        if (has_union_ids && has_unique_union_ids)
+        if (has_union_ids && has_valid_ids)
             ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"), u.at("id"));
         else
             ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"));
