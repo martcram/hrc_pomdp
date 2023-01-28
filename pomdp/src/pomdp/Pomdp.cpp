@@ -86,9 +86,6 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly, bool impo
     }
     this->_add_action(Action{}); // wait action
 
-    this->state_graph = this->_generate_state_graph();
-    this->state_graph.set_name(this->file_name + "_state_graph");
-
     // robot can only wait or extend existing subassemblies (i.e. grasp one part + tool)
     this->robot_actions.push_back(Action{}); // wait action
     std::vector<Action> actions{this->get_actions()};
@@ -102,10 +99,14 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly, bool impo
                      return (count == 1);
                  });
 
-    this->intention_graph = this->_generate_intention_graph();
-    this->intention_graph.set_name(this->file_name + "_intention_graph");
+    // ASSEMBLY STATES
+    this->state_graph = this->_generate_state_graph();
+    this->state_graph.set_name(this->file_name + "_state_graph");
 
     // INTENTIONS
+    this->intention_graph = this->_generate_intention_graph();
+    this->intention_graph.set_name(this->file_name + "_intention_graph");
+    
     std::vector<Intention> ig_nodes{this->intention_graph.get_nodes()};
     std::for_each(ig_nodes.begin(), ig_nodes.end(), [this](const auto &node) {
         this->_add_intention(node);
