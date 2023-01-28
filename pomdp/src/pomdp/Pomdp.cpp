@@ -9,12 +9,14 @@
 #include <iostream>   // std::cerr, std::cin, std::cout, std::endl
 #include <iterator>   // std::back_inserter, std::ostream_iterator
 #include <limits>     // std::numeric_limits
+#include <map>        // std::map
 #include <sstream>    // std::istringstream, std::ostringstream
 #include <string>     // std::string
-#include <map>        // std::map
+#include <tuple>      // std::get, std::tuple 
 #include <utility>    // std::make_pair, std::pair
 #include <vector>     // std::vector
 
+#include <graph/AndOrGraph.hpp>
 #include <graph/DiGraph.hpp>
 
 #include <main/Assembly.hpp>
@@ -35,7 +37,7 @@ using Intention = std::vector<State>;
 
 Pomdp::Pomdp(const std::string &description)
     : description{description}, file_name{}, assembly{}, state_graph{}, intention_graph{},
-      intention_ids{}, action_ids{}, observation_ids{}, action_obs_mapping{},
+      import_action_ids{false}, intention_ids{}, action_ids{}, observation_ids{}, action_obs_mapping{},
       num_intentions{}, num_actions{}, num_observations{},
       init_belief{}, state_trans_probabilities{}, observation_probabilities{}, rewards{}, discount{},
       robot_actions{}, pomdpx_file_path{}, policy_file_path{}, policy{}
@@ -53,9 +55,9 @@ Pomdp::Pomdp(const std::string &description)
                    });
 }
 
-Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
+Pomdp::Pomdp(const std::string &description, const Assembly &assembly, bool import_action_ids)
     : description{description}, file_name{}, assembly{assembly}, state_graph{}, intention_graph{},
-      intention_ids{}, action_ids{}, observation_ids{}, action_obs_mapping{},
+      import_action_ids{import_action_ids}, intention_ids{}, action_ids{}, observation_ids{}, action_obs_mapping{},
       num_intentions{}, num_actions{}, num_observations{},
       init_belief{}, state_trans_probabilities{}, observation_probabilities{}, rewards{}, discount{},
       robot_actions{}, pomdpx_file_path{}, policy_file_path{}, policy{}
@@ -71,16 +73,21 @@ Pomdp::Pomdp(const std::string &description, const Assembly &assembly)
                        else
                            return '\0';
                    });
-
     // ACTIONS
+    AndOrGraph<Subassembly> ao_graph{this->assembly.get_ao_graph()};
+    std::vector<std::tuple<Subassembly, std::vector<Subassembly>, int>> and_edges{ao_graph.get_edges()};
+    for (const auto &edge : and_edges) 
+    {
+        Action action{std::get<1>(edge), std::get<0>(edge)};
+        if (this->import_action_ids)
+            this->_add_action(action, std::get<2>(edge));
+        else
+            this->_add_action(action);
+    }
+    this->_add_action(Action{}); // wait action
+
     this->state_graph = this->_generate_state_graph();
     this->state_graph.set_name(this->file_name + "_state_graph");
-
-    std::vector<Action> sg_actions{this->state_graph.get_edge_attrs()};
-    std::for_each(sg_actions.begin(), sg_actions.end(), [this](const auto &action) {
-        this->_add_action(action);
-    });
-    this->_add_action(Action{}); // wait action
 
     // robot can only wait or extend existing subassemblies (i.e. grasp one part + tool)
     this->robot_actions.push_back(Action{}); // wait action
@@ -235,6 +242,13 @@ void Pomdp::_add_action(const Action &action)
         this->action_ids.emplace(std::make_pair(action_id, action));
 }
 
+void Pomdp::_add_action(const Action &action, int id)
+{
+    int action_id{};
+    if (!this->_get_id(action, action_id))
+        this->action_ids.emplace(std::make_pair(id, action));
+}
+
 void Pomdp::_add_observation(const Observation &observation)
 {
     int observation_id{};
@@ -362,15 +376,22 @@ DiGraph<State, Action> Pomdp::_generate_state_graph() const
 
         for (const Subassembly &subasm : open_state)
         {
-            for (const std::vector<Subassembly> &successor_subasms : this->assembly.get_ao_graph().get_successors(subasm))
+            for (const std::tuple<Subassembly, std::vector<Subassembly>, int> &edge : this->assembly.get_ao_graph().get_edges(subasm))
             {
                 State successor_state{open_state};
                 successor_state.erase(std::find(successor_state.begin(), successor_state.end(), subasm));
 
+                std::vector<Subassembly> successor_subasms = std::get<1>(edge);
                 successor_state.insert(successor_state.end(), successor_subasms.begin(), successor_subasms.end());
                 std::sort(successor_state.begin(), successor_state.end());
 
                 Action action{successor_subasms, subasm};
+                int action_id{};
+                if (this->import_action_ids)
+                    action = this->action_ids.at(std::get<2>(edge));
+                else if (this->_get_id(action, action_id))
+                    action = this->action_ids.at(action_id);
+                
                 state_graph.add_edge(successor_state, open_state, action);
                 open_states.push_back(successor_state);
             }

@@ -27,6 +27,8 @@ private:
     DiGraph<State, Action> state_graph;
     DiGraph<Intention, Action> intention_graph;
 
+    bool import_action_ids;
+
     std::map<int, Intention> intention_ids;
     std::map<int, Action> action_ids;
     std::map<int, Observation> observation_ids;
@@ -58,6 +60,7 @@ private:
 
     void _add_intention(const Intention &intention);
     void _add_action(const Action &action);
+    void _add_action(const Action &action, int id);
     void _add_observation(const Observation &observation);
 
     void _init_belief();
@@ -74,7 +77,7 @@ private:
 
 public:
     explicit Pomdp(const std::string &description);
-    explicit Pomdp(const std::string &description, const Assembly &assembly);
+    explicit Pomdp(const std::string &description, const Assembly &assembly, bool import_action_ids = false);
     ~Pomdp() = default;
 
     std::string get_description() const;
