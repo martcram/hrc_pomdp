@@ -45,6 +45,7 @@ public:
     ~AndOrGraph() = default;
 
     std::vector<T> get_nodes() const;
+    std::vector<std::tuple<T, std::vector<T>, int>> get_edges(const T &data) const;
     std::vector<std::tuple<T, std::vector<T>, int>> get_edges() const;
 
     std::vector<std::vector<T>> get_successors(const T &data) const;

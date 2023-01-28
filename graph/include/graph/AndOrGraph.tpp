@@ -106,6 +106,29 @@ std::vector<T> AndOrGraph<T>::get_nodes() const
 }
 
 template <typename T>
+std::vector<std::tuple<T, std::vector<T>, int>> AndOrGraph<T>::get_edges(const T &data) const
+{
+    std::vector<std::tuple<T, std::vector<T>, int>> edges_data{};
+
+    Node node{data}; // cannot construct a parameterless node
+    int node_id{};
+    if (this->get_id(node, node_id))
+    {
+        for (const AndEdge &edge : this->adjacency_list.at(node_id))
+        {               
+            std::vector<T> child_data{};
+            std::transform(edge.child_nodes.begin(), edge.child_nodes.end(), std::back_inserter(child_data),
+                        [](const Node child_node) {
+                            return child_node.data;
+                        });
+            edges_data.push_back(std::make_tuple(data, child_data, edge.id));
+        }
+    }
+
+    return edges_data;
+}
+
+template <typename T>
 std::vector<std::tuple<T, std::vector<T>, int>> AndOrGraph<T>::get_edges() const
 {
     std::vector<std::tuple<T, std::vector<T>, int>> edges_data{};
