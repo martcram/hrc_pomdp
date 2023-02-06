@@ -43,6 +43,8 @@ public:
     std::vector<Component> get_components() const;
     AndOrGraph<Subassembly> get_ao_graph() const;
 
+    std::vector<std::string> get_allowed_agents(int union_id) const;
+
     void import_ao_graph(const nlohmann::json &json);
     void import_ao_graph(const std::string &file_path);
 };

@@ -234,6 +234,15 @@ AndOrGraph<Subassembly> Assembly::get_ao_graph() const
     return this->ao_graph;
 }
 
+std::vector<std::string> Assembly::get_allowed_agents(int union_id) const
+{
+    auto it = this->union_agents_mapping.find(union_id);
+    if (it != this->union_agents_mapping.end())
+        return it->second;
+    else
+        return {};
+}
+
 void Assembly::import_ao_graph(const nlohmann::json &json)
 {
     nlohmann::json components = json.at("components");
