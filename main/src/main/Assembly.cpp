@@ -243,6 +243,18 @@ std::vector<std::string> Assembly::get_allowed_agents(int union_id) const
         return {};
 }
 
+bool Assembly::get_detection_id(int union_id, int &detection_id)
+{
+   auto it = this->union_detection_mapping.find(union_id);
+    if (it != this->union_detection_mapping.end())
+    {
+        detection_id = it->second;
+        return true;
+    }
+    else
+        return false; 
+}
+
 void Assembly::import_ao_graph(const nlohmann::json &json)
 {
     nlohmann::json components = json.at("components");
