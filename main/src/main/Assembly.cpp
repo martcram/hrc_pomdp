@@ -27,13 +27,15 @@ using Subassembly = std::vector<Component>;
 
 Assembly::Assembly()
     : components{}, obstruction_graphs{}, connection_graph{}, ao_graph{},
-      blocking_rules{}, technical_constraints{}
+      blocking_rules{}, technical_constraints{},
+      union_agents_mapping{}
 {
 }
 
 Assembly::Assembly(const std::vector<DiGraph<Component>> &obstr_graphs, const Graph<Component> &connect_graph, const std::unordered_map<Component, std::vector<Subassembly>> &tech_constraints)
     : components{}, obstruction_graphs{obstr_graphs}, connection_graph{connect_graph}, ao_graph{},
-      blocking_rules{}, technical_constraints{tech_constraints}
+      blocking_rules{}, technical_constraints{tech_constraints},
+      union_agents_mapping{}
 {
     components = connection_graph.get_nodes();
     blocking_rules = this->compute_blocking_rules();
@@ -272,7 +274,15 @@ void Assembly::import_ao_graph(const nlohmann::json &json)
     for (const nlohmann::json &u: unions)
     {
         if (has_union_ids && has_valid_ids)
-            ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"), u.at("id"));
+        {
+            int union_id{u.at("id")};
+            ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"), union_id);
+
+            std::vector<std::string> allowed_agents{};
+            if (u.contains("allowed_agents"))
+                allowed_agents = static_cast<std::vector<std::string>>(u.at("allowed_agents"));
+            this->union_agents_mapping.emplace(std::make_pair(union_id, allowed_agents));
+        }
         else
             ao_graph_ids.add_edge(u.at("parent_component"), u.at("child_components"));
     }
