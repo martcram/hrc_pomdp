@@ -41,8 +41,8 @@ bool AndOrGraph<T>::Node::operator<(const Node &rhs) const
 
 // EDGE - BEGIN
 template <typename T>
-AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id, const std::vector<std::string> &allowed_agents)
-    : child_nodes{}, id{id}, allowed_agents{allowed_agents}
+AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id, const std::vector<std::string> &allowed_agents, int detection_id)
+    : child_nodes{}, id{id}, allowed_agents{allowed_agents}, detection_id{detection_id}
 {
     std::copy_if(child_nodes.begin(), child_nodes.end(), std::back_inserter(this->child_nodes),
                  [this](const Node child_node) {
@@ -54,7 +54,7 @@ AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id, co
 
 template <typename T>
 AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id)
-    : AndEdge::AndEdge(child_nodes, id, std::vector<std::string>{})
+    : AndEdge::AndEdge(child_nodes, id, std::vector<std::string>{}, -1)
 {
 }
 

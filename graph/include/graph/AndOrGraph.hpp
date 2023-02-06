@@ -26,9 +26,10 @@ private:
         std::vector<Node> child_nodes;
         int id;
         std::vector<std::string> allowed_agents;
+        int detection_id;
 
         explicit AndEdge(const std::vector<Node> &child_nodes, int id);
-        explicit AndEdge(const std::vector<Node> &child_nodes, int id, const std::vector<std::string> &allowed_agents);
+        explicit AndEdge(const std::vector<Node> &child_nodes, int id, const std::vector<std::string> &allowed_agents, int detection_id);
         ~AndEdge() = default;
 
         bool operator==(const AndEdge &rhs) const;
