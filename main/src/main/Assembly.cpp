@@ -289,8 +289,7 @@ void Assembly::import_ao_graph(const nlohmann::json &json)
 
             std::vector<std::string> allowed_agents{};
             if (u.contains("allowed_agents"))
-                allowed_agents = static_cast<std::vector<std::string>>(u.at("allowed_agents"));
-            this->union_agents_mapping.emplace(std::make_pair(union_id, allowed_agents));
+                this->union_agents_mapping.emplace(std::make_pair(union_id, static_cast<std::vector<std::string>>(u.at("allowed_agents"))));
 
             if (u.contains("detection_id") && 
                 u.at("detection_id") >= 0 &&
