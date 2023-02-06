@@ -1,6 +1,7 @@
 #ifndef AND_OR_GRAPH_HPP
 #define AND_OR_GRAPH_HPP
 
+#include <string>        // std::string
 #include <tuple>         // std::tuple
 #include <unordered_map> // std::unordered_map
 #include <vector>        // std::vector
@@ -24,8 +25,10 @@ private:
     {
         std::vector<Node> child_nodes;
         int id;
+        std::vector<std::string> allowed_agents;
 
         explicit AndEdge(const std::vector<Node> &child_nodes, int id);
+        explicit AndEdge(const std::vector<Node> &child_nodes, int id, const std::vector<std::string> &allowed_agents);
         ~AndEdge() = default;
 
         bool operator==(const AndEdge &rhs) const;

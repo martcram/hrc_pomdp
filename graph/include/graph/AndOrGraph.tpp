@@ -1,5 +1,6 @@
 #include <algorithm>     // std::copy_if, std::find, std::find_if, std::for_each, std::sort, std::transform
 #include <iterator>      // std::back_inserter
+#include <string>        // std::string
 #include <tuple>         // std::get, std::make_tuple, std::tuple
 #include <unordered_map> // std::unordered_map
 #include <utility>       // std::make_pair
@@ -40,8 +41,8 @@ bool AndOrGraph<T>::Node::operator<(const Node &rhs) const
 
 // EDGE - BEGIN
 template <typename T>
-AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id)
-    : child_nodes{}, id{id}
+AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id, const std::vector<std::string> &allowed_agents)
+    : child_nodes{}, id{id}, allowed_agents{allowed_agents}
 {
     std::copy_if(child_nodes.begin(), child_nodes.end(), std::back_inserter(this->child_nodes),
                  [this](const Node child_node) {
@@ -49,6 +50,12 @@ AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id)
                  });
 
     std::sort(this->child_nodes.begin(), this->child_nodes.end());
+}
+
+template <typename T>
+AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id)
+    : AndEdge::AndEdge(child_nodes, id, std::vector<std::string>{})
+{
 }
 
 template <typename T>
