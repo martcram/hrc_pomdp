@@ -27,6 +27,7 @@ private:
     std::unordered_map<Component, std::vector<Subassembly>> technical_constraints;
 
     std::unordered_map<int, std::vector<std::string>> union_agents_mapping;
+    std::unordered_map<int, int> union_detection_mapping;
 
     std::unordered_map<Component, std::vector<Subassembly>> compute_blocking_rules() const;
     bool check_tech_feasibility(const Subassembly &subassembly) const;
