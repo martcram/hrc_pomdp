@@ -234,13 +234,16 @@ AndOrGraph<Subassembly> Assembly::get_ao_graph() const
     return this->ao_graph;
 }
 
-std::vector<std::string> Assembly::get_allowed_agents(int union_id) const
+bool Assembly::get_allowed_agents(int union_id, std::vector<std::string> &allowed_agents)
 {
     auto it = this->union_agents_mapping.find(union_id);
     if (it != this->union_agents_mapping.end())
-        return it->second;
+    {    
+        allowed_agents = it->second;
+        return true;
+    }
     else
-        return {};
+        return false;
 }
 
 bool Assembly::get_detection_id(int union_id, int &detection_id)
