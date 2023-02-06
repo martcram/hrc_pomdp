@@ -53,12 +53,6 @@ AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id, co
 }
 
 template <typename T>
-AndOrGraph<T>::AndEdge::AndEdge(const std::vector<Node> &child_nodes, int id)
-    : AndEdge::AndEdge(child_nodes, id, std::vector<std::string>{}, -1)
-{
-}
-
-template <typename T>
 bool AndOrGraph<T>::AndEdge::operator==(const AndEdge &rhs) const
 {
     return (this->child_nodes == rhs.child_nodes);
